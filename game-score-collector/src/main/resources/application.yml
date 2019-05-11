@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: game-score-api
+  data:
+    mongodb:
+      uri: mongodb://${MONGODB_HOST:localhost}:${MONGODB_PORT:27017}/gamescoredb
+
+website:
+  url: http://www.metacritic.com/browse/games/release-date/available/ps4/metascore
+  min-page: 0
+  max-page: 9
+  num-threads: 0 # if <= 0, the value set is the number of processors available to the Java virtual machine
