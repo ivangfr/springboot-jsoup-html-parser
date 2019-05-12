@@ -6,7 +6,7 @@ REST API.
 
 # Microservices
 
-The project consists of two microservices: `game-score-collector` and `game-score-api`.
+The project consists of two microservices: `game-score-api` and `game-score-collector`.
 
 ![project-diagram](images/project-diagram.png)
 
@@ -131,7 +131,7 @@ and `game-score-collector`.
 > kubectl get pods,cronjobs,jobs
 > ```
 
-The deployment will install `MongoDB`, run the job `game-score-collector-job` to get data from website for
+The deployment will install `MongoDB` helm chart, run the job `game-score-collector-job` to get data from website for
 the first time, deploy `game-score-api` and, finally, deploy the cronjob `game-score-collector-cronjob` that will run
 every `hh:00, hh:10, hh:20, hh:30, hh:40 and hh:50` to get updated data from website.
 
@@ -166,4 +166,12 @@ minikube stop
 - The command below shuts down and deletes the Minikube Virtual Machine. No data or state is preserved.
 ```
 minikube delete
+```
+
+# Running Tests
+
+Both `game-score-api` and `game-score-collector` microservices, have a set of test cases. In order to run them, just
+run the following script inside `game-score-project` root folder.
+```
+./mvnw clean test
 ```
