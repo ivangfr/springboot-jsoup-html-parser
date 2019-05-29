@@ -6,8 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import springfox.documentation.builders.AlternateTypeBuilder;
 import springfox.documentation.builders.AlternateTypePropertyBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -19,10 +17,10 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static springfox.documentation.builders.PathSelectors.regex;
 import static springfox.documentation.schema.AlternateTypeRules.newRule;
 
@@ -48,15 +46,6 @@ public class SwaggerConfig {
         return new ApiInfo(appName, null, null, null, null, null, null, Collections.emptyList());
     }
 
-    @Controller
-    public class SwaggerController {
-
-        @GetMapping("/")
-        public String redirectSwagger() {
-            return "redirect:/swagger-ui.html";
-        }
-    }
-
     // --
     // The bean below is needed for fixing Pageable in Swagger. Otherwise, the arguments page, size and sort won't be shown.
 
@@ -70,7 +59,7 @@ public class SwaggerConfig {
 
             @Override
             public List<AlternateTypeRule> rules() {
-                return newArrayList(newRule(resolver.resolve(Pageable.class), resolver.resolve(pageableMixin())));
+                return Collections.singletonList(newRule(resolver.resolve(Pageable.class), resolver.resolve(pageableMixin())));
             }
         };
     }
@@ -78,7 +67,7 @@ public class SwaggerConfig {
     private Type pageableMixin() {
         return new AlternateTypeBuilder()
                 .fullyQualifiedClassName(String.format("%s.generated.%s", Pageable.class.getPackage().getName(), Pageable.class.getSimpleName()))
-                .withProperties(newArrayList(property(Integer.class, "page"), property(Integer.class, "size"), property(String.class, "sort")))
+                .withProperties(Arrays.asList(property(Integer.class, "page"), property(Integer.class, "size"), property(String.class, "sort")))
                 .build();
     }
 

@@ -3,6 +3,7 @@ package com.mycompany.gamescoreapi;
 
 import com.mycompany.gamescoreapi.model.GameScore;
 import com.mycompany.gamescoreapi.repository.GameScoreRepository;
+import com.mycompany.gamescoreapi.rest.dto.GameScoreDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,7 +29,7 @@ class GameScoreApiApplicationTests {
 
     @Test
     void givenNoGameScore_testGetAllGameScore() {
-        ResponseEntity<GameScore[]> responseEntity = testRestTemplate.getForEntity("/api/games", GameScore[].class);
+        ResponseEntity<GameScoreDto[]> responseEntity = testRestTemplate.getForEntity("/api/games", GameScoreDto[].class);
 
         assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
         assertNotNull(responseEntity.getBody());
@@ -39,7 +40,7 @@ class GameScoreApiApplicationTests {
     void givenOneGameScore_testGetAllGameScore() {
         gameScoreRepository.save(new GameScore("Resident Evil 2", 91));
 
-        ResponseEntity<GameScore[]> responseEntity = testRestTemplate.getForEntity("/api/games", GameScore[].class);
+        ResponseEntity<GameScoreDto[]> responseEntity = testRestTemplate.getForEntity("/api/games", GameScoreDto[].class);
 
         assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
         assertNotNull(responseEntity.getBody());
@@ -50,7 +51,7 @@ class GameScoreApiApplicationTests {
 
     @Test
     void givenNonExistentGameTitle_testGetGameScoreByTitle() {
-        ResponseEntity<GameScore> responseEntity = testRestTemplate.getForEntity("/api/games/Soccer", GameScore.class);
+        ResponseEntity<GameScoreDto> responseEntity = testRestTemplate.getForEntity("/api/games/Soccer", GameScoreDto.class);
         assertEquals(responseEntity.getStatusCode(), HttpStatus.NOT_FOUND);
     }
 
@@ -58,7 +59,7 @@ class GameScoreApiApplicationTests {
     void givenExistentGameTitle_testGetGameScoreByTitle() {
         gameScoreRepository.save(new GameScore("FIFA 2019", 95));
 
-        ResponseEntity<GameScore> responseEntity = testRestTemplate.getForEntity("/api/games/FIFA 2019", GameScore.class);
+        ResponseEntity<GameScoreDto> responseEntity = testRestTemplate.getForEntity("/api/games/FIFA 2019", GameScoreDto.class);
 
         assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
         assertNotNull(responseEntity.getBody());
@@ -69,8 +70,9 @@ class GameScoreApiApplicationTests {
     // TODO
     @Test
     void givenNoGameScore_testGetAllGameScoreByPage() {
-        ParameterizedTypeReference<RestResponsePageImpl<GameScore>> responseType = new ParameterizedTypeReference<RestResponsePageImpl<GameScore>>() {};
-        ResponseEntity<RestResponsePageImpl<GameScore>> responseEntity = testRestTemplate.exchange("/api/pg_games", HttpMethod.GET,null, responseType);
+        ParameterizedTypeReference<RestResponsePageImpl<GameScoreDto>> responseType = new ParameterizedTypeReference<RestResponsePageImpl<GameScoreDto>>() {
+        };
+        ResponseEntity<RestResponsePageImpl<GameScoreDto>> responseEntity = testRestTemplate.exchange("/api/pg_games", HttpMethod.GET, null, responseType);
 
         assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
         assertNotNull(responseEntity.getBody());
@@ -85,8 +87,9 @@ class GameScoreApiApplicationTests {
         gameScoreRepository.save(new GameScore("FIFA 2019", 95));
         gameScoreRepository.save(new GameScore("Resident Evil 2", 91));
 
-        ParameterizedTypeReference<RestResponsePageImpl<GameScore>> responseType = new ParameterizedTypeReference<RestResponsePageImpl<GameScore>>() {};
-        ResponseEntity<RestResponsePageImpl<GameScore>> responseEntity = testRestTemplate.exchange("/api/pg_games", HttpMethod.GET,null, responseType);
+        ParameterizedTypeReference<RestResponsePageImpl<GameScoreDto>> responseType = new ParameterizedTypeReference<RestResponsePageImpl<GameScoreDto>>() {
+        };
+        ResponseEntity<RestResponsePageImpl<GameScoreDto>> responseEntity = testRestTemplate.exchange("/api/pg_games", HttpMethod.GET, null, responseType);
 
         assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
         assertNotNull(responseEntity.getBody());

@@ -17,6 +17,7 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<springfox.version>2.9.2</springfox.version>
+		<orika.version>1.5.2</orika.version>
 		<dockerfile-maven-plugin.version>1.4.10</dockerfile-maven-plugin.version>
 		<docker.image.prefix>docker.mycompany.com</docker.image.prefix>
 	</properties>
@@ -45,6 +46,13 @@
 			<groupId>io.springfox</groupId>
 			<artifactId>springfox-swagger-ui</artifactId>
 			<version>${springfox.version}</version>
+		</dependency>
+
+		<!-- Orika -->
+		<dependency>
+			<groupId>ma.glasnost.orika</groupId>
+			<artifactId>orika-core</artifactId>
+			<version>${orika.version}</version>
 		</dependency>
 
 		<dependency>

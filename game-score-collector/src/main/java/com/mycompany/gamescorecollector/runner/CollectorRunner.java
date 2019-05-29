@@ -1,6 +1,6 @@
 package com.mycompany.gamescorecollector.runner;
 
-import com.mycompany.gamescorecollector.client.WebsiteClientImpl;
+import com.mycompany.gamescorecollector.client.WebsiteClient;
 import com.mycompany.gamescorecollector.model.GameScore;
 import com.mycompany.gamescorecollector.service.GameScoreService;
 import lombok.extern.slf4j.Slf4j;
@@ -8,15 +8,16 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 public class CollectorRunner implements CommandLineRunner {
 
     private final GameScoreService gameScoreService;
-    private final WebsiteClientImpl websiteClient;
+    private final WebsiteClient websiteClient;
 
-    public CollectorRunner(GameScoreService gameScoreService, WebsiteClientImpl websiteClient) {
+    public CollectorRunner(GameScoreService gameScoreService, WebsiteClient websiteClient) {
         this.gameScoreService = gameScoreService;
         this.websiteClient = websiteClient;
     }

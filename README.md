@@ -49,13 +49,13 @@ docker-compose up -d
 
 ### Start microservices
 
-- Run `game-score-api`. It is Java Web application.
+- In one terminal run `game-score-api`. It is Java Web application.
 ```
 ./mvnw spring-boot:run --projects game-score-api
 ```
 
-- Run `game-score-collector`. It is a Java application that does its job and terminates. Ideally, it will be executed
-as a cronjob, scheduled to run during specific time intervals.
+- In another terminal run `game-score-collector`. It is a Java application that does its job and terminates. Ideally,
+it will be executed as a cronjob, scheduled to run during specific time intervals.
 ```
 ./mvnw spring-boot:run --projects game-score-collector
 ```
@@ -69,10 +69,15 @@ as a cronjob, scheduled to run during specific time intervals.
 curl -i http://localhost:8080/api/pg_games
 ```
 
+### Mongo Express
+
+[`Mongo Express`](https://hub.docker.com/_/mongo-express) is a web-based MongoDB admin interface. It is started
+docker-compose is run. Mongo Expresse can be accessed at http://localhost:8081 
+
 ### Running Tests
 
 Both `game-score-api` and `game-score-collector` microservices, have a set of test cases. In order to run them, just
-run the following script inside `game-score-project` root folder.
+execute the following script inside `game-score-project` root folder.
 ```
 ./mvnw clean test
 ```
