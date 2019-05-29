@@ -34,11 +34,9 @@ There are two types of execution, `Development` and `Production`. The first uses
 [`Docker`](https://www.docker.com/), [`Minikube`](https://kubernetes.io/docs/tasks/tools/install-minikube/#install-minikube),
 [`Helm`](https://helm.sh/docs/using_helm/#installing-the-helm-client) and [`kubectl`](https://kubernetes.io/docs/reference/kubectl/kubectl/)
 
-> *Note*. We are not going to explain how to install all of them because there are many good tutorial available on the internet.
+> *Note*. We are not going to explain how to install all of them because there are many good tutorials available on the internet.
 
 ## Development
-
-During development, it is easy to just run the application instead of always build the docker image before running it.
 
 ### Start environment
 
@@ -56,8 +54,8 @@ docker-compose up -d
 ./mvnw spring-boot:run --projects game-score-api
 ```
 
-- Run `game-score-collector`. It is a Java application that does the job and terminates. Ideally, it will be executed
-as a cronjob, scheduled to be run during specific time intervals.
+- Run `game-score-collector`. It is a Java application that does its job and terminates. Ideally, it will be executed
+as a cronjob, scheduled to run during specific time intervals.
 ```
 ./mvnw spring-boot:run --projects game-score-collector
 ```
@@ -69,6 +67,14 @@ as a cronjob, scheduled to be run during specific time intervals.
 - Or you can use `curl`. For example, the command below returns the game score results with pagination
 ```
 curl -i http://localhost:8080/api/pg_games
+```
+
+### Running Tests
+
+Both `game-score-api` and `game-score-collector` microservices, have a set of test cases. In order to run them, just
+run the following script inside `game-score-project` root folder.
+```
+./mvnw clean test
 ```
 
 ### Shutdown
@@ -166,12 +172,4 @@ minikube stop
 - The command below shuts down and deletes the Minikube Virtual Machine. No data or state is preserved.
 ```
 minikube delete
-```
-
-# Running Tests
-
-Both `game-score-api` and `game-score-collector` microservices, have a set of test cases. In order to run them, just
-run the following script inside `game-score-project` root folder.
-```
-./mvnw clean test
 ```
