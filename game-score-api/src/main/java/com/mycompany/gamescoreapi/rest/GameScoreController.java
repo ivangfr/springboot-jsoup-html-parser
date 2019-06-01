@@ -12,9 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @RestController
 @RequestMapping("/api")
 public class GameScoreController {
@@ -27,19 +24,10 @@ public class GameScoreController {
         this.mapperFacade = mapperFacade;
     }
 
-    @ApiOperation("Get all Game Score")
-    @GetMapping("/games")
-    public List<GameScoreDto> getAllGameScore() {
-        return gameScoreService.getAllGameScore()
-                .stream()
-                .map(gameScore -> mapperFacade.map(gameScore, GameScoreDto.class))
-                .collect(Collectors.toList());
-    }
-
     @ApiOperation(
             value = "Get all Game Score with pagination",
             notes = "To sort the results by a specified field, use in 'sort' field a string like: fieldname,[asc|desc]")
-    @GetMapping("/pg_games")
+    @GetMapping("/games")
     public Page<GameScoreDto> getAllGameScoreByPage(Pageable pageable) {
         return gameScoreService.getAllGameScoreByPage(pageable).map(gameScore -> mapperFacade.map(gameScore, GameScoreDto.class));
     }

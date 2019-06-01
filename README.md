@@ -1,4 +1,4 @@
-# `game-score-project`
+# `springboot-jsoup-html-parser`
 
 The goal of this project is to get a list of games and their scores from a website. The application must parse the
 website HTML content, get the necessary information, save the data in a database and expose them through a
@@ -15,17 +15,16 @@ The project consists of two microservices: `game-score-api` and `game-score-coll
 Spring-boot Java Web application that exposes a REST API from where clients can retrieve the game score data stored in
 `MongoDB` database.
 
-| Endpoints                 | Description   |
-| ------------------------- | ------------- |
-| `GET /api/games`          | this endpoint returns all game score                |
-| `GET /api/pg_games`       | this endpoint returns all game score with pagination|
-| `GET /api/games/{title}`  | this endpoint returns a specific game score         |
+| Endpoints                 | Description                                          |
+| ------------------------- | ---------------------------------------------------- |
+| `GET /api/games`          | this endpoint returns all game score with pagination |
+| `GET /api/games/{title}`  | this endpoint returns a specific game score          |
 
 ## game-score-collector
 
-Spring-boot Java application responsible for calling the game score website, parse the HTML and save the data in
-[`MongoDB`](https://www.mongodb.com/) database. It will be configured to run from time to time in order to keep
-the application updated about the information the website provides. 
+Spring-boot Java application responsible for calling the game score website, parse the HTML content (using
+[`jsoup`](https://jsoup.org/)) and save the data in [`MongoDB`](https://www.mongodb.com/) database. It will be
+configured to run from time to time in order to keep the application updated about the information the website provides. 
 
 # Execution Types
 
@@ -34,7 +33,7 @@ There are two types of execution, `Development` and `Production`. The first uses
 [`Docker`](https://www.docker.com/), [`Minikube`](https://kubernetes.io/docs/tasks/tools/install-minikube/#install-minikube),
 [`Helm`](https://helm.sh/docs/using_helm/#installing-the-helm-client) and [`kubectl`](https://kubernetes.io/docs/reference/kubectl/kubectl/)
 
-> *Note*. We are not going to explain how to install all of them because there are many good tutorials available on the internet.
+> **Note**. We are not going to explain how to install all of them because there are many good tutorials available on the internet.
 
 ## Development
 
@@ -42,7 +41,8 @@ There are two types of execution, `Development` and `Production`. The first uses
 
 - Open one terminal
 
-- In `game-score-project` root folder run the command below. It will start a `MongoDB` container at port `27017`
+- In `game-score-project` root folder run the command below. It will start a `MongoDB` container at port `27017` and
+`Mongo Express` at port `8081`.
 ```
 docker-compose up -d
 ```
@@ -62,22 +62,23 @@ it will be executed as a cronjob, scheduled to run during specific time interval
 
 ### Simulation
 
-- In order to test the application, you can access `game-score-api` swagger website: http://localhost:8080
+- In order to test the application, you can access `game-score-api` Swagger website: http://localhost:8080
 
-- Or you can use `curl`. For example, the command below returns the game score results with pagination
+- Or you can use `curl`. For example, the command below returns the game score results with pagination: page 0,
+size 10, sorted descending by `score` field.
 ```
-curl -i http://localhost:8080/api/pg_games
+curl -i "http://localhost:8080/api/games?page=0&size=10&sort=score%2Cdesc"
 ```
 
 ### Mongo Express
 
 [`Mongo Express`](https://hub.docker.com/_/mongo-express) is a web-based MongoDB admin interface. It is started
-docker-compose is run. Mongo Expresse can be accessed at http://localhost:8081 
+docker-compose is run. Mongo Express can be accessed at http://localhost:8081 
 
 ### Running Tests
 
-Both `game-score-api` and `game-score-collector` microservices, have a set of test cases. In order to run them, just
-execute the following script inside `game-score-project` root folder.
+Both `game-score-api` and `game-score-collector`, have a set of test cases. In order to run them, just execute the
+following script inside `game-score-project` root folder.
 ```
 ./mvnw clean test
 ```
@@ -110,6 +111,15 @@ eval $(minikube docker-env)
 > eval $(minikube docker-env -u)
 > ```
 
+- Init `Helm`
+```
+helm init --service-account default
+```
+> **Note**. Wait a few seconds so that `tiller` get ready. The following error will be throw if `tiller` is not ready yet.
+> ```
+> Error: could not find a ready tiller pod
+> ```
+
 - Inside `game-score-project` root folder, run the following commands to build the docker images of `game-score-api`
 and `game-score-collector`.
 
@@ -137,7 +147,7 @@ and `game-score-collector`.
 ```
 ./deploy-all.sh
 ```
-> *Note*. To check the progress of the deployment run
+> **Note**. To check the progress of the deployment run
 > ```
 > kubectl get pods,cronjobs,jobs
 > ```
@@ -156,9 +166,10 @@ echo $GAME_SCORE_API
 
 - Copy the url shown above and paste in a browser. It will open the`game-score-api` swagger website.
 
-- Or you can use `curl`. For example, the command below returns the game score results with pagination
+- Or you can use `curl`. For example, the command below returns the game score results with pagination: page 0,
+size 10, sorted descending by `score` field.
 ```
-curl -i $GAME_SCORE_API/api/pg_games
+curl -i "$GAME_SCORE_API/api/games?page=0&size=10&sort=score%2Cdesc"
 ```
 
 ### Shutdown

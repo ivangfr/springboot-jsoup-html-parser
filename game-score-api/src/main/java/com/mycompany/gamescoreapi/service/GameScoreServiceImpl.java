@@ -7,8 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class GameScoreServiceImpl implements GameScoreService {
 
@@ -16,11 +14,6 @@ public class GameScoreServiceImpl implements GameScoreService {
 
     public GameScoreServiceImpl(GameScoreRepository gameScoreRepository) {
         this.gameScoreRepository = gameScoreRepository;
-    }
-
-    @Override
-    public List<GameScore> getAllGameScore() {
-        return gameScoreRepository.findAll();
     }
 
     @Override

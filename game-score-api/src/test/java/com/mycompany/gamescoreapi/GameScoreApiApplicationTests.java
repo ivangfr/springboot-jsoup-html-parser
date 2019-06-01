@@ -28,28 +28,6 @@ class GameScoreApiApplicationTests {
     private TestRestTemplate testRestTemplate;
 
     @Test
-    void givenNoGameScore_testGetAllGameScore() {
-        ResponseEntity<GameScoreDto[]> responseEntity = testRestTemplate.getForEntity("/api/games", GameScoreDto[].class);
-
-        assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
-        assertNotNull(responseEntity.getBody());
-        assertEquals(responseEntity.getBody().length, 0);
-    }
-
-    @Test
-    void givenOneGameScore_testGetAllGameScore() {
-        gameScoreRepository.save(new GameScore("Resident Evil 2", 91));
-
-        ResponseEntity<GameScoreDto[]> responseEntity = testRestTemplate.getForEntity("/api/games", GameScoreDto[].class);
-
-        assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
-        assertNotNull(responseEntity.getBody());
-        assertEquals(responseEntity.getBody().length, 1);
-        assertEquals(responseEntity.getBody()[0].getTitle(), "Resident Evil 2");
-        assertEquals(responseEntity.getBody()[0].getScore(), 91);
-    }
-
-    @Test
     void givenNonExistentGameTitle_testGetGameScoreByTitle() {
         ResponseEntity<GameScoreDto> responseEntity = testRestTemplate.getForEntity("/api/games/Soccer", GameScoreDto.class);
         assertEquals(responseEntity.getStatusCode(), HttpStatus.NOT_FOUND);
@@ -67,12 +45,11 @@ class GameScoreApiApplicationTests {
         assertEquals(responseEntity.getBody().getScore(), 95);
     }
 
-    // TODO
     @Test
     void givenNoGameScore_testGetAllGameScoreByPage() {
         ParameterizedTypeReference<RestResponsePageImpl<GameScoreDto>> responseType = new ParameterizedTypeReference<RestResponsePageImpl<GameScoreDto>>() {
         };
-        ResponseEntity<RestResponsePageImpl<GameScoreDto>> responseEntity = testRestTemplate.exchange("/api/pg_games", HttpMethod.GET, null, responseType);
+        ResponseEntity<RestResponsePageImpl<GameScoreDto>> responseEntity = testRestTemplate.exchange("/api/games", HttpMethod.GET, null, responseType);
 
         assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
         assertNotNull(responseEntity.getBody());
@@ -80,8 +57,7 @@ class GameScoreApiApplicationTests {
         assertEquals(responseEntity.getBody().getTotalElements(), 0);
         assertEquals(responseEntity.getBody().getContent().size(), 0);
     }
-
-    // TODO
+    
     @Test
     void givenOneGameScore_testGetAllGameScoreByPage() {
         gameScoreRepository.save(new GameScore("FIFA 2019", 95));
@@ -89,7 +65,7 @@ class GameScoreApiApplicationTests {
 
         ParameterizedTypeReference<RestResponsePageImpl<GameScoreDto>> responseType = new ParameterizedTypeReference<RestResponsePageImpl<GameScoreDto>>() {
         };
-        ResponseEntity<RestResponsePageImpl<GameScoreDto>> responseEntity = testRestTemplate.exchange("/api/pg_games", HttpMethod.GET, null, responseType);
+        ResponseEntity<RestResponsePageImpl<GameScoreDto>> responseEntity = testRestTemplate.exchange("/api/games", HttpMethod.GET, null, responseType);
 
         assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
         assertNotNull(responseEntity.getBody());
