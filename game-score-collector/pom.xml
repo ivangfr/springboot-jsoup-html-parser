@@ -5,7 +5,7 @@
 
     <parent>
         <groupId>com.mycompany</groupId>
-        <artifactId>game-score-project</artifactId>
+        <artifactId>springboot-jsoup-html-parser</artifactId>
         <version>1.0.0</version>
         <relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
     </parent>

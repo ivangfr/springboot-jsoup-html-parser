@@ -41,7 +41,7 @@ There are two types of execution, `Development` and `Production`. The first uses
 
 - Open one terminal
 
-- In `game-score-project` root folder run the command below. It will start a `MongoDB` container at port `27017` and
+- In `springboot-jsoup-html-parser` root folder run the command below. It will start a `MongoDB` container at port `27017` and
 `Mongo Express` at port `8081`.
 ```
 docker-compose up -d
@@ -78,7 +78,7 @@ docker-compose is run. Mongo Express can be accessed at http://localhost:8081
 ### Running Tests
 
 Both `game-score-api` and `game-score-collector`, have a set of test cases. In order to run them, just execute the
-following script inside `game-score-project` root folder.
+following script inside `springboot-jsoup-html-parser` root folder.
 ```
 ./mvnw clean test
 ```
@@ -120,7 +120,7 @@ helm init --service-account default
 > Error: could not find a ready tiller pod
 > ```
 
-- Inside `game-score-project` root folder, run the following commands to build the docker images of `game-score-api`
+- Inside `springboot-jsoup-html-parser` root folder, run the following commands to build the docker images of `game-score-api`
 and `game-score-collector`.
 
 **game-score-api**
@@ -143,7 +143,7 @@ and `game-score-collector`.
 
 ### Deployment
 
-- Still inside `game-score-project` root folder, run the following script
+- Still inside `springboot-jsoup-html-parser` root folder, run the following script
 ```
 ./deploy-all.sh
 ```

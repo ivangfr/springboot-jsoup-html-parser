@@ -11,11 +11,11 @@
     </parent>
 
     <groupId>com.mycompany</groupId>
-    <artifactId>game-score-project</artifactId>
+    <artifactId>springboot-jsoup-html-parser</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
 
-    <name>game-score-project</name>
+    <name>springboot-jsoup-html-parser</name>
     <description>Demo project for Spring Boot</description>
 
     <modules>
