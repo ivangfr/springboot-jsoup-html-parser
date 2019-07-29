@@ -2,7 +2,7 @@
 
 helm install \
 --name my-mongodb \
---set image.tag=4.0.9 \
+--set image.tag=4.0.10 \
 --set image.pullPolicy=IfNotPresent \
 --set usePassword=false \
 --set persistence.enabled=false \

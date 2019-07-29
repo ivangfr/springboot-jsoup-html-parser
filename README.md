@@ -1,16 +1,15 @@
 # `springboot-jsoup-html-parser`
 
 The goal of this project is to get a list of games and their scores from a website. The application must parse the
-website HTML content, get the necessary information, save the data in a database and expose them through a
-REST API.
+website HTML content, get the necessary information, save the data in a database and expose them through a REST API.
 
-# Microservices
+## Microservices
 
 The project consists of two microservices: `game-score-api` and `game-score-collector`.
 
 ![project-diagram](images/project-diagram.png)
 
-## game-score-api
+### game-score-api
 
 Spring-boot Java Web application that exposes a REST API from where clients can retrieve the game score data stored in
 `MongoDB` database.
@@ -20,13 +19,13 @@ Spring-boot Java Web application that exposes a REST API from where clients can 
 | `GET /api/games`          | this endpoint returns all game score with pagination |
 | `GET /api/games/{title}`  | this endpoint returns a specific game score          |
 
-## game-score-collector
+### game-score-collector
 
 Spring-boot Java application responsible for calling the game score website, parse the HTML content (using
 [`jsoup`](https://jsoup.org/)) and save the data in [`MongoDB`](https://www.mongodb.com/) database. It will be
 configured to run from time to time in order to keep the application updated about the information the website provides. 
 
-# Execution Types
+## Execution Types
 
 There are two types of execution, `Development` and `Production`. The first uses [`Docker`](https://www.docker.com/),
 [`docker-compose`](https://docs.docker.com/compose/) and [`Maven`](https://maven.apache.org/). The second needs:
@@ -35,47 +34,45 @@ There are two types of execution, `Development` and `Production`. The first uses
 
 > **Note**. We are not going to explain how to install all of them because there are many good tutorials available on the internet.
 
-## Development
+### Development
 
-### Start environment
+#### Start environment
 
-- Open one terminal
-
-- In `springboot-jsoup-html-parser` root folder run the command below. It will start a `MongoDB` container at port `27017` and
-`Mongo Express` at port `8081`.
+Open a terminal and inside `springboot-jsoup-html-parser` root folder run the command below. It will start a `MongoDB`
+container at port `27017` and `Mongo Express` at port `8081`.
 ```
 docker-compose up -d
 ```
 
-### Start microservices
+#### Start Microservices
 
-- In one terminal run `game-score-api`. It is Java Web application.
+In a terminal run `game-score-api`. It is Java Web application.
 ```
 ./mvnw spring-boot:run --projects game-score-api
 ```
 
-- In another terminal run `game-score-collector`. It is a Java application that does its job and terminates. Ideally,
+In another terminal run `game-score-collector`. It is a Java application that does its job and terminates. Ideally,
 it will be executed as a cronjob, scheduled to run during specific time intervals.
 ```
 ./mvnw spring-boot:run --projects game-score-collector
 ```
 
-### Simulation
+#### Simulation
 
-- In order to test the application, you can access `game-score-api` Swagger website: http://localhost:8080
+In order to test the application, you can access `game-score-api` Swagger website: http://localhost:8080
 
-- Or you can use `curl`. For example, the command below returns the game score results with pagination: page 0,
+Another way is to `curl`. For example, the command below returns the game score results with pagination: page 0,
 size 10, sorted descending by `score` field.
 ```
 curl -i "http://localhost:8080/api/games?page=0&size=10&sort=score%2Cdesc"
 ```
 
-### Mongo Express
+#### Mongo Express
 
 [`Mongo Express`](https://hub.docker.com/_/mongo-express) is a web-based MongoDB admin interface. It is started
 docker-compose is run. Mongo Express can be accessed at http://localhost:8081 
 
-### Running Tests
+#### Running Tests
 
 Both `game-score-api` and `game-score-collector`, have a set of test cases. In order to run them, just execute the
 following script inside `springboot-jsoup-html-parser` root folder.
@@ -83,25 +80,23 @@ following script inside `springboot-jsoup-html-parser` root folder.
 ./mvnw clean test
 ```
 
-### Shutdown
+#### Shutdown
 
 To stop and remove containers, networks and volumes
 ```
 docker-compose down -v
 ```
 
-## Production
+### Production
 
-### Start environment
+#### Start environment
 
-- Open one terminal
-
-- Start `Minikube`
+Open one terminal and run the command below to start `Minikube`
 ```
 minikube start
 ```
 
-- Use `Minikube` Docker Daemon. Instead of pushing the docker image to Docker Registry, we will simply build the image
+Use `Minikube` Docker Daemon. Instead of pushing the docker image to Docker Registry, we will simply build the image
 using the `Minikube` Docker daemon. For it, run the command below to set `Minikube` host.
 ```
 eval $(minikube docker-env)
@@ -111,7 +106,7 @@ eval $(minikube docker-env)
 > eval $(minikube docker-env -u)
 > ```
 
-- Init `Helm`
+Next step is to init `Helm`
 ```
 helm init --service-account default
 ```
@@ -120,8 +115,8 @@ helm init --service-account default
 > Error: could not find a ready tiller pod
 > ```
 
-- Inside `springboot-jsoup-html-parser` root folder, run the following commands to build the docker images of `game-score-api`
-and `game-score-collector`.
+Finally, inside `springboot-jsoup-html-parser` root folder, run the following commands to build the docker images of
+`game-score-api` and `game-score-collector`.
 
 **game-score-api**
 ```
@@ -141,9 +136,9 @@ and `game-score-collector`.
 | `MONGODB_HOST` | Specify host of the `Mongo` database to use (default `localhost`) |
 | `MONGODB_PORT` | Specify port of the `Mongo` database to use (default `27017`) |
 
-### Deployment
+#### Deployment
 
-- Still inside `springboot-jsoup-html-parser` root folder, run the following script
+Still inside `springboot-jsoup-html-parser` root folder, run the following script
 ```
 ./deploy-all.sh
 ```
@@ -156,36 +151,36 @@ The deployment will install `MongoDB` helm chart, run the job `game-score-collec
 the first time, deploy `game-score-api` and, finally, deploy the cronjob `game-score-collector-cronjob` that will run
 every `hh:00, hh:10, hh:20, hh:30, hh:40 and hh:50` to get updated data from website.
 
-### Simulation
+#### Simulation
 
-- In order to test the application, run the following command to get the `game-score-api` url
+In order to test the application, run the following command to get the `game-score-api` url
 ```
 GAME_SCORE_API=$(minikube service game-score-api-service --url)
 echo $GAME_SCORE_API
 ```
 
-- Copy the url shown above and paste in a browser. It will open the`game-score-api` swagger website.
+Copy the url shown above and paste in a browser. It will open the`game-score-api` swagger website.
 
-- Or you can use `curl`. For example, the command below returns the game score results with pagination: page 0,
+Another way is to use `curl`. For example, the command below returns the game score results with pagination: page 0,
 size 10, sorted descending by `score` field.
 ```
 curl -i "$GAME_SCORE_API/api/games?page=0&size=10&sort=score%2Cdesc"
 ```
 
-### Shutdown
+#### Shutdown
 
-- The following script delete all deployments
+The following script delete all deployments
 ```
 ./cleaning-up.sh
 ```
 
-- The command below shuts down the Minikube Virtual Machine, but preserves all cluster state and data. Starting the
+The command below shuts down the Minikube Virtual Machine, but preserves all cluster state and data. Starting the
 cluster again will restore it to it’s previous state.
 ```
 minikube stop
 ```
 
-- The command below shuts down and deletes the Minikube Virtual Machine. No data or state is preserved.
+The command below shuts down and deletes the Minikube Virtual Machine. No data or state is preserved.
 ```
 minikube delete
 ```
