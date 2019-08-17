@@ -70,7 +70,7 @@ curl -i "http://localhost:8080/api/games?page=0&size=10&sort=score%2Cdesc"
 #### Mongo Express
 
 [`Mongo Express`](https://hub.docker.com/_/mongo-express) is a web-based MongoDB admin interface. It is started
-docker-compose is run. Mongo Express can be accessed at http://localhost:8081 
+docker-compose is run. Mongo Express can be accessed at http://localhost:8081
 
 #### Running Tests
 

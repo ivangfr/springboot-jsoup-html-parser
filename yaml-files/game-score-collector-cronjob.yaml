@@ -17,6 +17,4 @@ spec:
               env:
                 - name: MONGODB_HOST
                   value: "my-mongodb"
-                - name: WEBSITE_NUM_THREADS
-                  value: "4"
           restartPolicy: OnFailure
