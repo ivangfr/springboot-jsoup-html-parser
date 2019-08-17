@@ -4,6 +4,7 @@ import com.mycompany.gamescoreapi.model.GameScore;
 import com.mycompany.gamescoreapi.rest.dto.GameScoreDto;
 import com.mycompany.gamescoreapi.service.GameScoreService;
 import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
 import ma.glasnost.orika.MapperFacade;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,17 +13,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api")
 public class GameScoreController {
 
     private final GameScoreService gameScoreService;
     private final MapperFacade mapperFacade;
-
-    public GameScoreController(GameScoreService gameScoreService, MapperFacade mapperFacade) {
-        this.gameScoreService = gameScoreService;
-        this.mapperFacade = mapperFacade;
-    }
 
     @ApiOperation(
             value = "Get all Game Score with pagination",

@@ -11,7 +11,7 @@ The project consists of two microservices: `game-score-api` and `game-score-coll
 
 ### game-score-api
 
-Spring-boot Java Web application that exposes a REST API from where clients can retrieve the game score data stored in
+Spring boot Java Web application that exposes a REST API from where clients can retrieve the game score data stored in
 `MongoDB` database.
 
 | Endpoints                 | Description                                          |
@@ -21,7 +21,7 @@ Spring-boot Java Web application that exposes a REST API from where clients can 
 
 ### game-score-collector
 
-Spring-boot Java application responsible for calling the game score website, parse the HTML content (using
+Spring boot Java application responsible for calling the game score website, parse the HTML content (using
 [`jsoup`](https://jsoup.org/)) and save the data in [`MongoDB`](https://www.mongodb.com/) database. It will be
 configured to run from time to time in order to keep the application updated about the information the website provides. 
 

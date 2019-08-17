@@ -30,7 +30,7 @@ class GameScoreApiApplicationTests {
     @Test
     void givenNonExistentGameTitle_testGetGameScoreByTitle() {
         ResponseEntity<GameScoreDto> responseEntity = testRestTemplate.getForEntity("/api/games/Soccer", GameScoreDto.class);
-        assertEquals(responseEntity.getStatusCode(), HttpStatus.NOT_FOUND);
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
     }
 
     @Test
@@ -39,10 +39,10 @@ class GameScoreApiApplicationTests {
 
         ResponseEntity<GameScoreDto> responseEntity = testRestTemplate.getForEntity("/api/games/FIFA 2019", GameScoreDto.class);
 
-        assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertNotNull(responseEntity.getBody());
-        assertEquals(responseEntity.getBody().getTitle(), "FIFA 2019");
-        assertEquals(responseEntity.getBody().getScore(), 95);
+        assertEquals("FIFA 2019", responseEntity.getBody().getTitle());
+        assertEquals(95, responseEntity.getBody().getScore());
     }
 
     @Test
@@ -51,13 +51,13 @@ class GameScoreApiApplicationTests {
         };
         ResponseEntity<RestResponsePageImpl<GameScoreDto>> responseEntity = testRestTemplate.exchange("/api/games", HttpMethod.GET, null, responseType);
 
-        assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertNotNull(responseEntity.getBody());
-        assertEquals(responseEntity.getBody().getTotalPages(), 0);
-        assertEquals(responseEntity.getBody().getTotalElements(), 0);
-        assertEquals(responseEntity.getBody().getContent().size(), 0);
+        assertEquals(0, responseEntity.getBody().getTotalPages());
+        assertEquals(0, responseEntity.getBody().getTotalElements());
+        assertEquals(0, responseEntity.getBody().getContent().size());
     }
-    
+
     @Test
     void givenOneGameScore_testGetAllGameScoreByPage() {
         gameScoreRepository.save(new GameScore("FIFA 2019", 95));
@@ -67,12 +67,12 @@ class GameScoreApiApplicationTests {
         };
         ResponseEntity<RestResponsePageImpl<GameScoreDto>> responseEntity = testRestTemplate.exchange("/api/games", HttpMethod.GET, null, responseType);
 
-        assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertNotNull(responseEntity.getBody());
-        assertEquals(responseEntity.getBody().getTotalPages(), 1);
-        assertEquals(responseEntity.getBody().getTotalElements(), 2);
-        assertEquals(responseEntity.getBody().getNumberOfElements(), 2);
-        assertEquals(responseEntity.getBody().getContent().size(), 2);
+        assertEquals(1, responseEntity.getBody().getTotalPages());
+        assertEquals(2, responseEntity.getBody().getTotalElements());
+        assertEquals(2, responseEntity.getBody().getNumberOfElements());
+        assertEquals(2, responseEntity.getBody().getContent().size());
     }
 
 }

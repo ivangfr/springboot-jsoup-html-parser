@@ -1,4 +1,4 @@
-package com.mycompany.gamescorecollector.client.properties;
+package com.mycompany.gamescorecollector.collector;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
