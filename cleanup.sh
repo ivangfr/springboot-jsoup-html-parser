@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-helm delete --purge my-mongodb
+helm delete my-mongodb
 
 kubectl delete -f yaml-files/game-score-api-deployment.yaml
 kubectl delete -f yaml-files/game-score-collector-job.yaml

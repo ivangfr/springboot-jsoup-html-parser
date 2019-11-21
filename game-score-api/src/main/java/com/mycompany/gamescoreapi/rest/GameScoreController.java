@@ -23,10 +23,11 @@ public class GameScoreController {
 
     @ApiOperation(
             value = "Get all Game Score with pagination",
-            notes = "To sort the results by a specified field, use in 'sort' field a string like: fieldname,[asc|desc]")
+            notes = "To sort the results by a specified field, use in 'sort' field a string like: field name,[asc|desc]")
     @GetMapping("/games")
     public Page<GameScoreDto> getAllGameScoreByPage(Pageable pageable) {
-        return gameScoreService.getAllGameScoreByPage(pageable).map(gameScore -> mapperFacade.map(gameScore, GameScoreDto.class));
+        return gameScoreService.getAllGameScoreByPage(pageable)
+                .map(gameScore -> mapperFacade.map(gameScore, GameScoreDto.class));
     }
 
     @ApiOperation("Get Game Score filter by Title")

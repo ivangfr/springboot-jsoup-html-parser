@@ -29,7 +29,7 @@ public class CollectorRunner implements CommandLineRunner {
         log.info("Starting collecting game score data from website...");
         Instant start = Instant.now();
 
-        int numGameScores = 0;
+        int numGameScores;
         switch (collectorProperties.getMode()) {
             case GET_AND_SAVE:
                 numGameScores = websiteCollector.collectGameScores();

@@ -28,13 +28,13 @@ class GameScoreApiApplicationTests {
     private TestRestTemplate testRestTemplate;
 
     @Test
-    void givenNonExistentGameTitle_testGetGameScoreByTitle() {
+    void givenNonExistentGameTitleTestGetGameScoreByTitle() {
         ResponseEntity<GameScoreDto> responseEntity = testRestTemplate.getForEntity("/api/games/Soccer", GameScoreDto.class);
         assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
     }
 
     @Test
-    void givenExistentGameTitle_testGetGameScoreByTitle() {
+    void givenExistentGameTitleTestGetGameScoreByTitle() {
         gameScoreRepository.save(new GameScore("FIFA 2019", 95));
 
         ResponseEntity<GameScoreDto> responseEntity = testRestTemplate.getForEntity("/api/games/FIFA 2019", GameScoreDto.class);
@@ -46,7 +46,7 @@ class GameScoreApiApplicationTests {
     }
 
     @Test
-    void givenNoGameScore_testGetAllGameScoreByPage() {
+    void givenNoGameScoreTestGetAllGameScoreByPage() {
         ParameterizedTypeReference<RestResponsePageImpl<GameScoreDto>> responseType = new ParameterizedTypeReference<RestResponsePageImpl<GameScoreDto>>() {
         };
         ResponseEntity<RestResponsePageImpl<GameScoreDto>> responseEntity = testRestTemplate.exchange("/api/games", HttpMethod.GET, null, responseType);
@@ -59,7 +59,7 @@ class GameScoreApiApplicationTests {
     }
 
     @Test
-    void givenOneGameScore_testGetAllGameScoreByPage() {
+    void givenOneGameScoreTestGetAllGameScoreByPage() {
         gameScoreRepository.save(new GameScore("FIFA 2019", 95));
         gameScoreRepository.save(new GameScore("Resident Evil 2", 91));
 
