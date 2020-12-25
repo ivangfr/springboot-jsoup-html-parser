@@ -10,13 +10,9 @@ import org.springframework.context.annotation.Configuration;
 public class MapperConfig {
 
     @Bean
-    MapperFactory mapperFactory() {
-        return new DefaultMapperFactory.Builder().useAutoMapping(true).build();
-    }
-
-    @Bean
     MapperFacade mapperFacade() {
-        return mapperFactory().getMapperFacade();
+        MapperFactory mapperFactory = new DefaultMapperFactory.Builder().useAutoMapping(true).build();
+        return mapperFactory.getMapperFacade();
     }
 
 }

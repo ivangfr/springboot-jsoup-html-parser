@@ -2,6 +2,8 @@
 
 The goal of this project is to get a list of games and their scores from a website. The application must parse the website HTML content, get the necessary information, save the data in a database and expose them through a REST API.
 
+> **Note:** In [`kubernetes-minikube-environment`](https://github.com/ivangfr/kubernetes-minikube-environment/tree/master/user-event-sourcing-kafka) repository, it's shown how to deploy this project in `Kubernetes` (`Minikube`)
+
 ## Project Diagram
 
 ![project-diagram](images/project-diagram.png)
@@ -12,24 +14,22 @@ The goal of this project is to get a list of games and their scores from a websi
 
   [`Spring Boot`](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/) Java Web application that exposes a REST API from where clients can retrieve the game score data stored in `MongoDB` database.
 
-  | Endpoints                 | Description                                          |
-  | ------------------------- | ---------------------------------------------------- |
-  | `GET /api/games`          | this endpoint returns all game score with pagination |
-  | `GET /api/games/{title}`  | this endpoint returns a specific game score          |
+  | Endpoints                 | Description                            |
+  | ------------------------- | -------------------------------------- |
+  | `GET /api/games`          | returns all game score with pagination |
+  | `GET /api/games/{title}`  | returns a specific game score          |
 
 - ### game-score-collector
 
   `Spring Boot` Java application responsible for calling the game score website, parse the HTML content (using [`jsoup`](https://jsoup.org/)) and save the data in [`MongoDB`](https://www.mongodb.com/) database. It will be configured to run from time to time in order to keep the application updated about the information the website provides. 
 
-## Execution Types
+## Prerequisites
 
-There are two types of execution, `Development` and `Production`. The first uses [`Docker`](https://www.docker.com/), [`docker-compose`](https://docs.docker.com/compose/) and [`Maven`](https://maven.apache.org/). The second needs: [`Docker`](https://www.docker.com/), [`Minikube`](https://kubernetes.io/docs/tasks/tools/install-minikube/#install-minikube), [`Helm`](https://helm.sh/docs/using_helm/#installing-the-helm-client) and [`kubectl`](https://kubernetes.io/docs/reference/kubectl/kubectl/)
+- [`Java 11+`](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html)
+- [`Docker`](https://www.docker.com/)
+- [`Docker-Compose`](https://docs.docker.com/compose/install/)
 
-> **Note:** We are not going to explain how to install all of them because there are many good tutorials available on the internet.
-
-## Development
-
-### Start environment
+## Start environment
 
 - Open a terminal and navigate to `springboot-jsoup-html-parser` root folder
 
@@ -38,43 +38,103 @@ There are two types of execution, `Development` and `Production`. The first uses
   docker-compose up -d
   ```
 
-### Start Applications
+## Running Applications with Maven
 
 - In a terminal, make sure you are inside `springboot-jsoup-html-parser` root folder
- 
-- Execute the command below to start `game-score-api`
-  ```
-  ./mvnw clean spring-boot:run --projects game-score-api \
-    -Dspring-boot.run.jvmArguments="-Dspring.data.mongodb.username=gamescoreuser -Dspring.data.mongodb.password=gamescorepass"
-  ```
 
-- Open another terminal and make sure you are inside `springboot-jsoup-html-parser` root folder
-
-- Run the following command to start `game-score-collector`
+- Run the following command to trigger `game-score-collector`
   ```
   ./mvnw spring-boot:run --projects game-score-collector \
     -Dspring-boot.run.jvmArguments="-Dspring.data.mongodb.username=gamescoreuser -Dspring.data.mongodb.password=gamescorepass"
   ```
   `game-score-collector` is a Java application that does its job and terminates. Ideally, it will be executed as a cronjob, scheduled to run during specific time intervals.
 
-### Testing
+- Execute the command below to start `game-score-api`
+  ```
+  ./mvnw clean spring-boot:run --projects game-score-api \
+    -Dspring-boot.run.jvmArguments="-Dspring.data.mongodb.username=gamescoreuser -Dspring.data.mongodb.password=gamescorepass"
+  ```
 
-- In order to test the application, you can access `game-score-api` Swagger website: http://localhost:8080
+## Running Applications as Docker containers
 
-- Another way to test is using `curl`. For instance, the command below returns the game score results with pagination: page 0, size 10, sorted descending by `score` field.
+### Build Application’s Docker Image
+
+- In a terminal, make sure you are in `springboot-jsoup-html-parser` root folder
+
+- Run the following script to build the Docker images
+  - JVM
+    ```
+    ./build-apps.sh
+    ```
+  - Native (it's not working yet, see [Issues](#issues))
+    ```
+    ./build-apps.sh native
+    ```
+  
+### Application’s Environment Variables
+
+- **game-score-api**
+
+  | Environment Variable | Description                                                       |
+  | -------------------- | ----------------------------------------------------------------- |
+  | `MONGODB_HOST`       | Specify host of the `Mongo` database to use (default `localhost`) |
+  | `MONGODB_PORT`       | Specify port of the `Mongo` database to use (default `27017`)     |
+
+- **game-score-collector**
+
+  | Environment Variable | Description                                                       |
+  | -------------------- | ----------------------------------------------------------------- |
+  | `MONGODB_HOST`       | Specify host of the `Mongo` database to use (default `localhost`) |
+  | `MONGODB_PORT`       | Specify port of the `Mongo` database to use (default `27017`)     |
+
+### Start Application’s Docker Container
+
+- In a terminal, run the command below to trigger `game-score-collector` Docker container
+  ```
+  docker run --rm \
+    --name game-score-collector \
+    --network=springboot-jsoup-html-parser_default \
+    --env MONGODB_HOST=mongodb \
+    --env SPRING_DATA_MONGODB_USERNAME=gamescoreuser \
+    --env SPRING_DATA_MONGODB_PASSWORD=gamescorepass \
+    docker.mycompany.com/game-score-collector:1.0.0
+  ```
+
+- Run the following command to start `game-score-api` Docker container
+  ```
+  docker run -d --rm -p 8080:8080 \
+    --name game-score-api \
+    --network=springboot-jsoup-html-parser_default \
+    --env MONGODB_HOST=mongodb \
+    --env SPRING_DATA_MONGODB_USERNAME=gamescoreuser \
+    --env SPRING_DATA_MONGODB_PASSWORD=gamescorepass \
+    docker.mycompany.com/game-score-api:1.0.0
+  ```
+
+## Testing
+
+- A fast way to test the application is by calling a `game-score-api` endpoint using `curl`. For instance, the command below returns the game score results with pagination: page 0, size 10, sorted descending by `score` field.
   ```
   curl -i "http://localhost:8080/api/games?page=0&size=10&sort=score%2Cdesc"
   ```
 
-### Shutdown
+- You can access `game-score-api` Swagger at http://localhost:8080
 
-- Stop `game-score-api` by going to its terminal and pressing `Ctrl+C`
-- Stop and remove `docker-compose` containers, networks and volumes by running the command below
+## Shutdown
+
+- Stop `game-score-api`
+  - If it was started with `Maven`, go to the terminal where it is running and press `Ctrl+C`
+  - If it was started as a Docker container, run the following command in a terminal
+    ```
+    docker stop game-score-api
+    ```
+
+- Stop and remove docker-compose containers, networks and volumes
   ```
   docker-compose down -v
   ```
 
-### Running Tests
+## Running Tests
 
 Both `game-score-api` and `game-score-collector` have a set of test cases. In order to run them
 
@@ -85,93 +145,91 @@ Both `game-score-api` and `game-score-collector` have a set of test cases. In or
   ./mvnw clean test
   ```
 
-## Production
+## Issues
 
-### Start environment
-
-- Open one terminal and run the command below to start `Minikube`
+- The `game-score-api` docker native image builds successfully but, an exception is thrown at runtime. Maybe, it's related to this [issue #372](https://github.com/spring-projects-experimental/spring-graalvm-native/issues/372)
   ```
-  minikube start --memory='8000mb' --vm-driver='virtualbox'
-  ```
-
-- Instead of pushing the docker image to Docker Registry, we will simply build the image using the `Minikube` Docker daemon. For it, open a terminal and run the command below to set `Minikube` host
-  ```
-  eval $(minikube docker-env)
-  ```
-
-- Inside `springboot-jsoup-html-parser` root folder, run the following script to build the docker images of `game-score-api` and `game-score-collector`
-  ```
-  ./build-apps.sh
-  ```
-
-  - **game-score-api**
+  ERROR 1 --- [           main] o.s.boot.SpringApplication               : Application run failed
   
-    | Environment Variable | Description                                                       |
-    | -------------------- | ----------------------------------------------------------------- |
-    | `MONGODB_HOST`       | Specify host of the `Mongo` database to use (default `localhost`) |
-    | `MONGODB_PORT`       | Specify port of the `Mongo` database to use (default `27017`)     |
-
-  - **game-score-collector**
-
-    | Environment Variable | Description                                                       |
-    | -------------------- | ----------------------------------------------------------------- |
-    | `MONGODB_HOST`       | Specify host of the `Mongo` database to use (default `localhost`) |
-    | `MONGODB_PORT`       | Specify port of the `Mongo` database to use (default `27017`)     |
-
-- As `Minikube` host won't be used anymore, you can undo this change by running
+  org.springframework.beans.factory.BeanDefinitionStoreException: Failed to process import candidates for configuration class [org.springframework.boot.autoconfigure.data.web.SpringDataWebAutoConfiguration]; nested exception is java.io.FileNotFoundException: class path resource [org/springframework/data/mongodb/config/GeoJsonConfiguration.class] cannot be opened because it does not exist
+  	at org.springframework.context.annotation.ConfigurationClassParser.processImports(ConfigurationClassParser.java:610) ~[na:na]
+  	at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:311) ~[na:na]
+  	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:250) ~[na:na]
+  	at org.springframework.context.annotation.ConfigurationClassParser.processImports(ConfigurationClassParser.java:600) ~[na:na]
+  	at org.springframework.context.annotation.ConfigurationClassParser.access$800(ConfigurationClassParser.java:111) ~[na:na]
+  	at org.springframework.context.annotation.ConfigurationClassParser$DeferredImportSelectorGroupingHandler.lambda$processGroupImports$1(ConfigurationClassParser.java:812) ~[na:na]
+  	at java.util.ArrayList.forEach(ArrayList.java:1541) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:na]
+  	at org.springframework.context.annotation.ConfigurationClassParser$DeferredImportSelectorGroupingHandler.processGroupImports(ConfigurationClassParser.java:809) ~[na:na]
+  	at org.springframework.context.annotation.ConfigurationClassParser$DeferredImportSelectorHandler.process(ConfigurationClassParser.java:780) ~[na:na]
+  	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:193) ~[na:na]
+  	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:336) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:5.3.2]
+  	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:252) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:5.3.2]
+  	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:285) ~[na:na]
+  	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:99) ~[na:na]
+  	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:751) ~[na:na]
+  	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:569) ~[na:na]
+  	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:144) ~[na:na]
+  	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:767) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:2.4.1]
+  	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:759) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:2.4.1]
+  	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:426) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:2.4.1]
+  	at org.springframework.boot.SpringApplication.run(SpringApplication.java:326) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:2.4.1]
+  	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1309) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:2.4.1]
+  	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1298) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:2.4.1]
+  	at com.mycompany.gamescoreapi.GameScoreApiApplication.main(GameScoreApiApplication.java:12) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:na]
+  Caused by: java.io.FileNotFoundException: class path resource [org/springframework/data/mongodb/config/GeoJsonConfiguration.class] cannot be opened because it does not exist
+  	at org.springframework.core.io.ClassPathResource.getInputStream(ClassPathResource.java:180) ~[na:na]
+  	at org.springframework.core.type.classreading.SimpleMetadataReader.getClassReader(SimpleMetadataReader.java:55) ~[na:na]
+  	at org.springframework.core.type.classreading.SimpleMetadataReader.<init>(SimpleMetadataReader.java:49) ~[na:na]
+  	at org.springframework.core.type.classreading.SimpleMetadataReaderFactory.getMetadataReader(SimpleMetadataReaderFactory.java:103) ~[na:na]
+  	at org.springframework.boot.type.classreading.ConcurrentReferenceCachingMetadataReaderFactory.createMetadataReader(ConcurrentReferenceCachingMetadataReaderFactory.java:86) ~[na:na]
+  	at org.springframework.boot.type.classreading.ConcurrentReferenceCachingMetadataReaderFactory.getMetadataReader(ConcurrentReferenceCachingMetadataReaderFactory.java:73) ~[na:na]
+  	at org.springframework.core.type.classreading.SimpleMetadataReaderFactory.getMetadataReader(SimpleMetadataReaderFactory.java:81) ~[na:na]
+  	at org.springframework.context.annotation.ConfigurationClassParser.asSourceClass(ConfigurationClassParser.java:696) ~[na:na]
+  	at org.springframework.context.annotation.ConfigurationClassParser.asSourceClasses(ConfigurationClassParser.java:675) ~[na:na]
+  	at org.springframework.context.annotation.ConfigurationClassParser.processImports(ConfigurationClassParser.java:582) ~[na:na]
+  	... 23 common frames omitted
   ```
-  eval $(minikube docker-env -u)
-  ```
 
-### Deployment
-
-- In a terminal, make sure you are inside `springboot-jsoup-html-parser` root folder
-
-- Run the following script
+- The `game-score-collector` docker native image builds successfully but, an exception is thrown at runtime
   ```
-  ./deploy-all.sh
-  ```
+  ERROR 1 --- [           main] o.s.boot.SpringApplication               : Application run failed
   
-  The deployment will:
-  - Create `dev` namespace where everything will be installed;
-  - Install `MongoDB` helm chart;
-  - Run the job `game-score-collector-job` to get data from website for the first time;
-  - Deploy `game-score-api`;
-  - Deploy `game-score-collector-cronjob` that will run every `hh:00, hh:10, hh:20, hh:30, hh:40 and hh:50` to get updated data from website.
-  
-- To check the progress of the deployment run
-  ```
-  kubectl get --namespace dev pods,cronjobs,jobs
-  ```
-
-### Testing
-
-- In order to test the application, let's first get the `game-score-api` url by running the following command
-  ```
-  GAME_SCORE_API=$(minikube service --namespace dev game-score-api-service --url)
-  echo $GAME_SCORE_API
-  ```
-
-- Copy the url displayed above and paste in a browser. It will open the`game-score-api` Swagger website.
-
-- Another way to test is using `curl`. For instance, the command below returns the game score results with pagination: page 0, size 10, sorted descending by `score` field.
-  ```
-  curl -i "$GAME_SCORE_API/api/games?page=0&size=10&sort=score%2Cdesc"
-  ```
-
-### Shutdown
-
-- The following script delete all deployments
-  ```
-  ./cleanup.sh
-  ```
-
-- The command below shuts down the `Minikube Virtual Machine`, but preserves all cluster state and data. Starting the cluster again will restore it to its previous state.
-  ```
-  minikube stop
-  ```
-
-- The command below shuts down and deletes the `Minikube Virtual Machine`. No data or state is preserved.
-  ```
-  minikube delete
+  org.springframework.beans.factory.BeanDefinitionStoreException: Failed to parse configuration class [com.mycompany.gamescorecollector.GameScoreCollectorApplication]; nested exception is java.lang.IllegalArgumentException: Could not find class [com.mycompany.gamescorecollector.properties.CollectorProperties]
+  	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:189) ~[na:na]
+  	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:336) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:5.3.2]
+  	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:252) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:5.3.2]
+  	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:285) ~[na:na]
+  	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:99) ~[na:na]
+  	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:751) ~[na:na]
+  	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:569) ~[na:na]
+  	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:767) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:2.4.1]
+  	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:759) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:2.4.1]
+  	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:426) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:2.4.1]
+  	at org.springframework.boot.SpringApplication.run(SpringApplication.java:326) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:2.4.1]
+  	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1309) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:2.4.1]
+  	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1298) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:2.4.1]
+  	at com.mycompany.gamescorecollector.GameScoreCollectorApplication.main(GameScoreCollectorApplication.java:12) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:na]
+  Caused by: java.lang.IllegalArgumentException: Could not find class [com.mycompany.gamescorecollector.properties.CollectorProperties]
+  	at org.springframework.util.ClassUtils.resolveClassName(ClassUtils.java:334) ~[na:na]
+  	at org.springframework.core.annotation.TypeMappedAnnotation.adapt(TypeMappedAnnotation.java:446) ~[na:na]
+  	at org.springframework.core.annotation.TypeMappedAnnotation.getValue(TypeMappedAnnotation.java:369) ~[na:na]
+  	at org.springframework.core.annotation.TypeMappedAnnotation.asMap(TypeMappedAnnotation.java:284) ~[na:na]
+  	at org.springframework.core.annotation.AbstractMergedAnnotation.asAnnotationAttributes(AbstractMergedAnnotation.java:193) ~[na:na]
+  	at org.springframework.core.type.AnnotatedTypeMetadata.getAnnotationAttributes(AnnotatedTypeMetadata.java:106) ~[na:na]
+  	at org.springframework.context.annotation.AnnotationConfigUtils.attributesFor(AnnotationConfigUtils.java:285) ~[na:na]
+  	at org.springframework.context.annotation.AnnotationBeanNameGenerator.determineBeanNameFromAnnotation(AnnotationBeanNameGenerator.java:102) ~[na:na]
+  	at org.springframework.context.annotation.AnnotationBeanNameGenerator.generateBeanName(AnnotationBeanNameGenerator.java:81) ~[na:na]
+  	at org.springframework.context.annotation.ClassPathBeanDefinitionScanner.doScan(ClassPathBeanDefinitionScanner.java:280) ~[na:na]
+  	at org.springframework.context.annotation.ComponentScanAnnotationParser.parse(ComponentScanAnnotationParser.java:132) ~[na:na]
+  	at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:296) ~[na:na]
+  	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:250) ~[na:na]
+  	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:207) ~[na:na]
+  	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:175) ~[na:na]
+  	... 13 common frames omitted
+  Caused by: java.lang.ClassNotFoundException: com.mycompany.gamescorecollector.properties.CollectorProperties
+  	at com.oracle.svm.core.hub.ClassForNameSupport.forName(ClassForNameSupport.java:60) ~[na:na]
+  	at java.lang.Class.forName(DynamicHub.java:1292) ~[na:na]
+  	at org.springframework.util.ClassUtils.forName(ClassUtils.java:284) ~[na:na]
+  	at org.springframework.util.ClassUtils.resolveClassName(ClassUtils.java:324) ~[na:na]
+  	... 27 common frames omitted
   ```
