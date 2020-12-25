@@ -3,7 +3,9 @@ spring:
     name: game-score-api
   data:
     mongodb:
-      uri: mongodb://${MONGODB_HOST:localhost}:${MONGODB_PORT:27017}/gamescoredb
+      host: ${MONGODB_HOST:localhost}
+      port: ${MONGODB_PORT:27017}
+      database: gamescoredb
 
 collector:
   mode: GET_AND_SAVE

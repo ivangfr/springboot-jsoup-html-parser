@@ -12,9 +12,9 @@ import java.util.stream.Collectors;
 @Component
 public class WebsiteContentParser {
 
-    private static final String GAME_SELECTOR = ".game_product";
-    private static final String GAME_TITLE_SELECTOR = ".product_title";
-    private static final String GAME_SCORE_SELECTOR = ".metascore_w";
+    private static final String GAME_SELECTOR = "table.clamp-list > tbody > tr:not(.spacer)";
+    private static final String GAME_TITLE_SELECTOR = "h3";
+    private static final String GAME_SCORE_SELECTOR = ".clamp-score-wrap > a > .metascore_w";
 
     public List<GameScore> parse(Document document) {
         if (document == null) {

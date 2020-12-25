@@ -35,13 +35,13 @@ class WebsiteContentParserTest {
         Document document = Jsoup.parse(file, "UTF-8");
         List<GameScore> gameScores = contentParser.parse(document);
         assertNotNull(gameScores);
-        assertEquals(3, gameScores.size());
+        assertEquals(100, gameScores.size());
         assertEquals("Red Dead Redemption 2", gameScores.get(0).getTitle());
         assertEquals(97, gameScores.get(0).getScore());
         assertEquals("Grand Theft Auto V", gameScores.get(1).getTitle());
         assertEquals(97, gameScores.get(1).getScore());
-        assertEquals("Death Mark", gameScores.get(2).getTitle());
-        assertEquals(83, gameScores.get(2).getScore());
+        assertEquals("Persona 5 Royal", gameScores.get(2).getTitle());
+        assertEquals(95, gameScores.get(2).getScore());
     }
 
     @Test

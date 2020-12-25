@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -15,11 +15,8 @@
     <description>Demo project for Spring Boot</description>
 
     <properties>
-        <java.version>1.8</java.version>
         <springfox.version>2.9.2</springfox.version>
         <orika.version>1.5.4</orika.version>
-        <dockerfile-maven-plugin.version>1.4.10</dockerfile-maven-plugin.version>
-        <docker.image.prefix>docker.mycompany.com</docker.image.prefix>
     </properties>
 
     <dependencies>
@@ -64,12 +61,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.junit.vintage</groupId>
-                    <artifactId>junit-vintage-engine</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>de.flapdoodle.embed</groupId>
@@ -77,26 +68,5 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>com.spotify</groupId>
-                <artifactId>dockerfile-maven-plugin</artifactId>
-                <version>${dockerfile-maven-plugin.version}</version>
-                <configuration>
-                    <repository>${docker.image.prefix}/${project.artifactId}</repository>
-                    <tag>${project.version}</tag>
-                    <buildArgs>
-                        <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
-                    </buildArgs>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

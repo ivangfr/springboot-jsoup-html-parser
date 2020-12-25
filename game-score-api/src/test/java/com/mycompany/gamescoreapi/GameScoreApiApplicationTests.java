@@ -47,7 +47,7 @@ class GameScoreApiApplicationTests {
 
     @Test
     void givenNoGameScoreTestGetAllGameScoreByPage() {
-        ParameterizedTypeReference<RestResponsePageImpl<GameScoreDto>> responseType = new ParameterizedTypeReference<RestResponsePageImpl<GameScoreDto>>() {
+        ParameterizedTypeReference<RestResponsePageImpl<GameScoreDto>> responseType = new ParameterizedTypeReference<>() {
         };
         ResponseEntity<RestResponsePageImpl<GameScoreDto>> responseEntity = testRestTemplate.exchange("/api/games", HttpMethod.GET, null, responseType);
 
@@ -63,7 +63,7 @@ class GameScoreApiApplicationTests {
         gameScoreRepository.save(new GameScore("FIFA 2019", 95));
         gameScoreRepository.save(new GameScore("Resident Evil 2", 91));
 
-        ParameterizedTypeReference<RestResponsePageImpl<GameScoreDto>> responseType = new ParameterizedTypeReference<RestResponsePageImpl<GameScoreDto>>() {
+        ParameterizedTypeReference<RestResponsePageImpl<GameScoreDto>> responseType = new ParameterizedTypeReference<>() {
         };
         ResponseEntity<RestResponsePageImpl<GameScoreDto>> responseEntity = testRestTemplate.exchange("/api/games", HttpMethod.GET, null, responseType);
 

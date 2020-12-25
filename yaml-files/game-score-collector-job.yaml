@@ -16,4 +16,8 @@ spec:
           env:
             - name: MONGODB_HOST
               value: "my-mongodb"
+            - name: SPRING_DATA_MONGODB_USERNAME
+              value: gamescoreuser
+            - name: SPRING_DATA_MONGODB_PASSWORD
+              value: gamescorepass
       restartPolicy: Never

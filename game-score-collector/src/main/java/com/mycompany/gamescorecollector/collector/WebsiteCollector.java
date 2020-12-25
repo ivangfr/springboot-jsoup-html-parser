@@ -49,7 +49,7 @@ public class WebsiteCollector {
             );
         }
 
-        CompletableFuture.allOf(completableFutureList.toArray(new CompletableFuture[completableFutureList.size()])).join();
+        CompletableFuture.allOf(completableFutureList.toArray(new CompletableFuture[0])).join();
 
         return longAccumulator.intValue();
     }
@@ -64,7 +64,7 @@ public class WebsiteCollector {
             );
         }
 
-        return CompletableFuture.allOf(completableFutureList.toArray(new CompletableFuture[completableFutureList.size()]))
+        return CompletableFuture.allOf(completableFutureList.toArray(new CompletableFuture[0]))
                 .thenApply(v ->
                         completableFutureList.stream()
                                 .map(CompletableFuture::join)
