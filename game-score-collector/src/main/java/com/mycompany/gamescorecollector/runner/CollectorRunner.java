@@ -7,7 +7,6 @@ import com.mycompany.gamescorecollector.service.GameScoreService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
@@ -17,20 +16,20 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-@EnableConfigurationProperties(CollectorProperties.class)
 public class CollectorRunner implements CommandLineRunner {
 
+    private final CollectorProperties collectorProperties;
     private final GameScoreService gameScoreService;
     private final WebsiteCollector websiteCollector;
-    private final CollectorProperties collectorProperties;
 
     @Override
     public void run(String... args) {
-        log.info("Starting collecting game score data from website...");
+        CollectorProperties.Mode mode = collectorProperties.getMode();
+        log.info("Starting collecting game score data from website. Mode selected: {}", mode.name());
         Instant start = Instant.now();
 
         int numGameScores;
-        switch (collectorProperties.getMode()) {
+        switch (mode) {
             case GET_AND_SAVE:
                 numGameScores = websiteCollector.collectGameScores();
                 break;
@@ -42,8 +41,7 @@ public class CollectorRunner implements CommandLineRunner {
                 break;
 
             default:
-                throw new IllegalArgumentException(
-                        String.format("The collector mode '%s' is not valid.", collectorProperties.getMode().name()));
+                throw new IllegalArgumentException(String.format("The collector mode '%s' is not valid.", mode.name()));
         }
 
         Duration duration = Duration.between(start, Instant.now());

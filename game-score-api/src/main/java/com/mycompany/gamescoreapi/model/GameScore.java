@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
-@Document(collection = "gamescore")
+@Document(collection = "gamescores")
 public class GameScore {
 
     @Id

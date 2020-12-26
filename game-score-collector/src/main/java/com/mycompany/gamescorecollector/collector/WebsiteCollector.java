@@ -5,64 +5,57 @@ import com.mycompany.gamescorecollector.properties.CollectorProperties;
 import com.mycompany.gamescorecollector.service.GameScoreService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.LongAccumulator;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 @RequiredArgsConstructor
 @Component
 public class WebsiteCollector {
 
-    @Value("${collector.website.min-page}")
-    private int minPage;
-
-    @Value("${collector.website.max-page}")
-    private int maxPage;
-
-    @Value("${collector.website.url}")
-    private String url;
-
-    private final CollectorProperties websiteProperties;
+    private final CollectorProperties collectorProperties;
     private final WebsiteClient websiteClient;
     private final WebsiteContentParser websiteContentParser;
     private final GameScoreService gameScoreService;
 
     public int collectGameScores() {
+        int minPage = collectorProperties.getWebsite().getMinPage();
+        int maxPage = collectorProperties.getWebsite().getMaxPage();
         LongAccumulator longAccumulator = new LongAccumulator(Long::sum, 0);
-        List<CompletableFuture<Void>> completableFutureList = new ArrayList<>();
-        for (int i = minPage; i <= maxPage; i++) {
-            String pageUrl = getPageUrl(i);
-            completableFutureList.add(
-                    CompletableFuture.supplyAsync(() -> websiteClient.call(pageUrl))
-                            .thenApply(websiteContentParser::parse)
-                            .thenAccept(gameScores -> {
-                                longAccumulator.accumulate(gameScores.size());
-                                gameScoreService.saveGameScores(gameScores);
-                            })
-            );
-        }
 
-        CompletableFuture.allOf(completableFutureList.toArray(new CompletableFuture[0])).join();
+        CompletableFuture.allOf(IntStream
+                .range(minPage, maxPage + 1)
+                .parallel()
+                .mapToObj(i ->
+                        CompletableFuture.supplyAsync(() -> websiteClient.call(getPageUrl(i)))
+                                .thenApply(websiteContentParser::parse)
+                                .thenAccept(gameScores -> {
+                                    longAccumulator.accumulate(gameScores.size());
+                                    gameScoreService.saveGameScores(gameScores);
+                                }))
+                .toArray(CompletableFuture[]::new)
+        ).join();
 
         return longAccumulator.intValue();
     }
 
     public List<GameScore> getGameScores() {
-        List<CompletableFuture<List<GameScore>>> completableFutureList = new ArrayList<>();
-        for (int i = minPage; i <= maxPage; i++) {
-            String pageUrl = getPageUrl(i);
-            completableFutureList.add(
-                    CompletableFuture.supplyAsync(() -> websiteClient.call(pageUrl))
-                            .thenApply(websiteContentParser::parse)
-            );
-        }
+        int minPage = collectorProperties.getWebsite().getMinPage();
+        int maxPage = collectorProperties.getWebsite().getMaxPage();
+
+        List<CompletableFuture<List<GameScore>>> completableFutureList = IntStream
+                .range(minPage, maxPage + 1)
+                .parallel()
+                .mapToObj(i ->
+                        CompletableFuture.supplyAsync(() ->
+                                websiteClient.call(getPageUrl(i))).thenApply(websiteContentParser::parse))
+                .collect(Collectors.toList());
 
         return CompletableFuture.allOf(completableFutureList.toArray(new CompletableFuture[0]))
                 .thenApply(v ->
@@ -74,6 +67,7 @@ public class WebsiteCollector {
     }
 
     private String getPageUrl(int pageNum) {
+        String url = collectorProperties.getWebsite().getUrl();
         return String.format("%s?page=%d", url, pageNum);
     }
 

@@ -16,7 +16,6 @@
 
     <properties>
         <jsoup.version>1.13.1</jsoup.version>
-        <hibernate-validator.version>6.1.7.Final</hibernate-validator.version>
     </properties>
 
     <dependencies>
@@ -33,11 +32,13 @@
         </dependency>
 
         <!-- Add javax.validation -->
+        <!-- Commented for now as it isn't working with docker native image -->
+        <!--
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>${hibernate-validator.version}</version>
         </dependency>
+        -->
 
         <dependency>
             <groupId>org.projectlombok</groupId>

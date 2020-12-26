@@ -2,7 +2,7 @@
 
 The goal of this project is to get a list of games and their scores from a website. The application must parse the website HTML content, get the necessary information, save the data in a database and expose them through a REST API.
 
-> **Note:** In [`kubernetes-minikube-environment`](https://github.com/ivangfr/kubernetes-minikube-environment/tree/master/user-event-sourcing-kafka) repository, it's shown how to deploy this project in `Kubernetes` (`Minikube`)
+> **Note:** In [`kubernetes-minikube-environment`](https://github.com/ivangfr/kubernetes-minikube-environment/tree/master/html-parser-job-cronjob) repository, it's shown how to deploy this project in `Kubernetes` (`Minikube`)
 
 ## Project Diagram
 
@@ -44,7 +44,7 @@ The goal of this project is to get a list of games and their scores from a websi
 
 - Run the following command to trigger `game-score-collector`
   ```
-  ./mvnw spring-boot:run --projects game-score-collector \
+  ./mvnw clean spring-boot:run --projects game-score-collector \
     -Dspring-boot.run.jvmArguments="-Dspring.data.mongodb.username=gamescoreuser -Dspring.data.mongodb.password=gamescorepass"
   ```
   `game-score-collector` is a Java application that does its job and terminates. Ideally, it will be executed as a cronjob, scheduled to run during specific time intervals.
@@ -89,7 +89,7 @@ The goal of this project is to get a list of games and their scores from a websi
 
 ### Start Application’s Docker Container
 
-- In a terminal, run the command below to trigger `game-score-collector` Docker container
+- In a terminal, run the command below to run `game-score-collector` Docker container
   ```
   docker run --rm \
     --name game-score-collector \
@@ -100,7 +100,7 @@ The goal of this project is to get a list of games and their scores from a websi
     docker.mycompany.com/game-score-collector:1.0.0
   ```
 
-- Run the following command to start `game-score-api` Docker container
+- Then, run the following command to start `game-score-api` Docker container in detached mode
   ```
   docker run -d --rm -p 8080:8080 \
     --name game-score-api \
@@ -119,6 +119,18 @@ The goal of this project is to get a list of games and their scores from a websi
   ```
 
 - You can access `game-score-api` Swagger at http://localhost:8080
+
+## Useful Commands
+
+- **MongoDB**
+
+  List all game scores
+  ```
+  docker exec -it mongodb mongo -ugamescoreuser -pgamescorepass --authenticationDatabase gamescoredb
+  use gamescoredb
+  db.gamescores.find()
+  ```
+  > Type `exit` to get out of MongoDB shell
 
 ## Shutdown
 
@@ -146,6 +158,25 @@ Both `game-score-api` and `game-score-collector` have a set of test cases. In or
   ```
 
 ## Issues
+
+- In `game-score-collector`, the `hibernate-validator` dependency is commented out as it isn't working in docker native image. Maybe, it's related to [issues #417](https://github.com/spring-projects-experimental/spring-graalvm-native/issues/417). The exception is
+  ```
+  ERROR 1 --- [           main] o.s.b.d.LoggingFailureAnalysisReporter   :
+  
+  ***************************
+  APPLICATION FAILED TO START
+  ***************************
+  
+  Description:
+  
+  Failed to bind properties under 'app' to com.mycompany.gamescorecollector.properties.CollectorProperties:
+  
+      Reason: org.hibernate.validator.internal.constraintvalidators.bv.NotNullValidator.<init>()
+  
+  Action:
+  
+  Update your application's configuration
+  ```
 
 - The `game-score-api` docker native image builds successfully but, an exception is thrown at runtime. Maybe, it's related to this [issue #372](https://github.com/spring-projects-experimental/spring-graalvm-native/issues/372)
   ```
@@ -189,47 +220,4 @@ Both `game-score-api` and `game-score-collector` have a set of test cases. In or
   	at org.springframework.context.annotation.ConfigurationClassParser.processImports(ConfigurationClassParser.java:582) ~[na:na]
   	... 23 common frames omitted
   ```
-
-- The `game-score-collector` docker native image builds successfully but, an exception is thrown at runtime
-  ```
-  ERROR 1 --- [           main] o.s.boot.SpringApplication               : Application run failed
-  
-  org.springframework.beans.factory.BeanDefinitionStoreException: Failed to parse configuration class [com.mycompany.gamescorecollector.GameScoreCollectorApplication]; nested exception is java.lang.IllegalArgumentException: Could not find class [com.mycompany.gamescorecollector.properties.CollectorProperties]
-  	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:189) ~[na:na]
-  	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:336) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:5.3.2]
-  	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:252) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:5.3.2]
-  	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:285) ~[na:na]
-  	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:99) ~[na:na]
-  	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:751) ~[na:na]
-  	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:569) ~[na:na]
-  	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:767) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:2.4.1]
-  	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:759) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:2.4.1]
-  	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:426) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:2.4.1]
-  	at org.springframework.boot.SpringApplication.run(SpringApplication.java:326) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:2.4.1]
-  	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1309) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:2.4.1]
-  	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1298) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:2.4.1]
-  	at com.mycompany.gamescorecollector.GameScoreCollectorApplication.main(GameScoreCollectorApplication.java:12) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:na]
-  Caused by: java.lang.IllegalArgumentException: Could not find class [com.mycompany.gamescorecollector.properties.CollectorProperties]
-  	at org.springframework.util.ClassUtils.resolveClassName(ClassUtils.java:334) ~[na:na]
-  	at org.springframework.core.annotation.TypeMappedAnnotation.adapt(TypeMappedAnnotation.java:446) ~[na:na]
-  	at org.springframework.core.annotation.TypeMappedAnnotation.getValue(TypeMappedAnnotation.java:369) ~[na:na]
-  	at org.springframework.core.annotation.TypeMappedAnnotation.asMap(TypeMappedAnnotation.java:284) ~[na:na]
-  	at org.springframework.core.annotation.AbstractMergedAnnotation.asAnnotationAttributes(AbstractMergedAnnotation.java:193) ~[na:na]
-  	at org.springframework.core.type.AnnotatedTypeMetadata.getAnnotationAttributes(AnnotatedTypeMetadata.java:106) ~[na:na]
-  	at org.springframework.context.annotation.AnnotationConfigUtils.attributesFor(AnnotationConfigUtils.java:285) ~[na:na]
-  	at org.springframework.context.annotation.AnnotationBeanNameGenerator.determineBeanNameFromAnnotation(AnnotationBeanNameGenerator.java:102) ~[na:na]
-  	at org.springframework.context.annotation.AnnotationBeanNameGenerator.generateBeanName(AnnotationBeanNameGenerator.java:81) ~[na:na]
-  	at org.springframework.context.annotation.ClassPathBeanDefinitionScanner.doScan(ClassPathBeanDefinitionScanner.java:280) ~[na:na]
-  	at org.springframework.context.annotation.ComponentScanAnnotationParser.parse(ComponentScanAnnotationParser.java:132) ~[na:na]
-  	at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:296) ~[na:na]
-  	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:250) ~[na:na]
-  	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:207) ~[na:na]
-  	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:175) ~[na:na]
-  	... 13 common frames omitted
-  Caused by: java.lang.ClassNotFoundException: com.mycompany.gamescorecollector.properties.CollectorProperties
-  	at com.oracle.svm.core.hub.ClassForNameSupport.forName(ClassForNameSupport.java:60) ~[na:na]
-  	at java.lang.Class.forName(DynamicHub.java:1292) ~[na:na]
-  	at org.springframework.util.ClassUtils.forName(ClassUtils.java:284) ~[na:na]
-  	at org.springframework.util.ClassUtils.resolveClassName(ClassUtils.java:324) ~[na:na]
-  	... 27 common frames omitted
-  ```
+ 
