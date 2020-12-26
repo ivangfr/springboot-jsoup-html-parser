@@ -1,4 +1,4 @@
-# `springboot-jsoup-html-parser`
+# springboot-jsoup-html-parser
 
 The goal of this project is to get a list of games and their scores from a website. The application must parse the website HTML content, get the necessary information, save the data in a database and expose them through a REST API.
 
@@ -33,7 +33,7 @@ The goal of this project is to get a list of games and their scores from a websi
 
 - Open a terminal and navigate to `springboot-jsoup-html-parser` root folder
 
-- Run the command below to start a `MongoDB` Docker container at port `27017
+- Run the command below to start a `MongoDB` Docker container at port `27017`
   ```
   docker-compose up -d
   ```
