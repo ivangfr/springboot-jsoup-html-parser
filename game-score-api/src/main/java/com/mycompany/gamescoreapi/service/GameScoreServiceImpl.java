@@ -15,14 +15,18 @@ public class GameScoreServiceImpl implements GameScoreService {
     private final GameScoreRepository gameScoreRepository;
 
     @Override
-    public Page<GameScore> getAllGameScoreByPage(Pageable pageable) {
+    public GameScore getGameScore(Long id) {
+        return gameScoreRepository.findById(id).orElseThrow(() -> new GameScoreNotFoundException(id));
+    }
+
+    @Override
+    public Page<GameScore> getGameScores(Pageable pageable) {
         return gameScoreRepository.findAll(pageable);
     }
 
     @Override
-    public GameScore getGameScoreByTitle(String title) {
-        return gameScoreRepository.findById(title)
-                .orElseThrow(() -> new GameScoreNotFoundException(String.format("Game with title '%s' not found", title)));
+    public Page<GameScore> getGameScores(Pageable pageable, String title) {
+        return gameScoreRepository.findByTitleContainingIgnoreCase(pageable, title);
     }
 
 }

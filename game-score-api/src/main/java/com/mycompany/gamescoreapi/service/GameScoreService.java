@@ -6,8 +6,10 @@ import org.springframework.data.domain.Pageable;
 
 public interface GameScoreService {
 
-    Page<GameScore> getAllGameScoreByPage(Pageable pageable);
+    GameScore getGameScore(Long id);
 
-    GameScore getGameScoreByTitle(String title);
+    Page<GameScore> getGameScores(Pageable pageable);
+
+    Page<GameScore> getGameScores(Pageable pageable, String title);
 
 }

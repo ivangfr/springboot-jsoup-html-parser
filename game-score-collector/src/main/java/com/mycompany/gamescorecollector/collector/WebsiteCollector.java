@@ -31,7 +31,6 @@ public class WebsiteCollector {
 
         CompletableFuture.allOf(IntStream
                 .range(minPage, maxPage + 1)
-                .parallel()
                 .mapToObj(i ->
                         CompletableFuture.supplyAsync(() -> websiteClient.call(getPageUrl(i)))
                                 .thenApply(websiteContentParser::parse)
@@ -51,7 +50,6 @@ public class WebsiteCollector {
 
         List<CompletableFuture<List<GameScore>>> completableFutureList = IntStream
                 .range(minPage, maxPage + 1)
-                .parallel()
                 .mapToObj(i ->
                         CompletableFuture.supplyAsync(() ->
                                 websiteClient.call(getPageUrl(i))).thenApply(websiteContentParser::parse))

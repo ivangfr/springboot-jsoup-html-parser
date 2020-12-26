@@ -14,10 +14,10 @@ The goal of this project is to get a list of games and their scores from a websi
 
   [`Spring Boot`](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/) Java Web application that exposes a REST API from where clients can retrieve the game score data stored in `MongoDB` database.
 
-  | Endpoints                 | Description                            |
-  | ------------------------- | -------------------------------------- |
-  | `GET /api/games`          | returns all game score with pagination |
-  | `GET /api/games/{title}`  | returns a specific game score          |
+  | Endpoints                 | Description                                                  |
+  | ------------------------- | ------------------------------------------------------------ |
+  | `GET /api/games [?title]` | returns all game scores or filtered by title with pagination |
+  | `GET /api/games/{id}`     | returns a specific game score filtered by id                 |
 
 - ### game-score-collector
 
@@ -33,7 +33,7 @@ The goal of this project is to get a list of games and their scores from a websi
 
 - Open a terminal and navigate to `springboot-jsoup-html-parser` root folder
 
-- Run the command below to start a `MongoDB` docker container at port `27017
+- Run the command below to start a `MongoDB` Docker container at port `27017
   ```
   docker-compose up -d
   ```
@@ -42,14 +42,14 @@ The goal of this project is to get a list of games and their scores from a websi
 
 - In a terminal, make sure you are inside `springboot-jsoup-html-parser` root folder
 
-- Run the following command to trigger `game-score-collector`
+- Execute the following command to run `game-score-collector`
   ```
   ./mvnw clean spring-boot:run --projects game-score-collector \
     -Dspring-boot.run.jvmArguments="-Dspring.data.mongodb.username=gamescoreuser -Dspring.data.mongodb.password=gamescorepass"
   ```
   `game-score-collector` is a Java application that does its job and terminates. Ideally, it will be executed as a cronjob, scheduled to run during specific time intervals.
 
-- Execute the command below to start `game-score-api`
+- Execute the command below to run `game-score-api`
   ```
   ./mvnw clean spring-boot:run --projects game-score-api \
     -Dspring-boot.run.jvmArguments="-Dspring.data.mongodb.username=gamescoreuser -Dspring.data.mongodb.password=gamescorepass"
@@ -89,7 +89,7 @@ The goal of this project is to get a list of games and their scores from a websi
 
 ### Start Application’s Docker Container
 
-- In a terminal, run the command below to run `game-score-collector` Docker container
+- In a terminal, execute the command below to run `game-score-collector` Docker container
   ```
   docker run --rm \
     --name game-score-collector \
@@ -100,7 +100,7 @@ The goal of this project is to get a list of games and their scores from a websi
     docker.mycompany.com/game-score-collector:1.0.0
   ```
 
-- Then, run the following command to start `game-score-api` Docker container in detached mode
+- Then, execute the following command to run `game-score-api` Docker container in detached mode
   ```
   docker run -d --rm -p 8080:8080 \
     --name game-score-api \
@@ -113,7 +113,9 @@ The goal of this project is to get a list of games and their scores from a websi
 
 ## Testing
 
-- A fast way to test the application is by calling a `game-score-api` endpoint using `curl`. For instance, the command below returns the game score results with pagination: page 0, size 10, sorted descending by `score` field.
+- A fast way to test the application is by calling a `game-score-api` endpoint using `curl`.
+
+  For instance, the command below returns the game score results with pagination: page 0, size 10, sorted descending by `score` field.
   ```
   curl -i "http://localhost:8080/api/games?page=0&size=10&sort=score%2Cdesc"
   ```
@@ -129,6 +131,7 @@ The goal of this project is to get a list of games and their scores from a websi
   docker exec -it mongodb mongo -ugamescoreuser -pgamescorepass --authenticationDatabase gamescoredb
   use gamescoredb
   db.gamescores.find()
+  db.gamescores.getIndexes()
   ```
   > Type `exit` to get out of MongoDB shell
 

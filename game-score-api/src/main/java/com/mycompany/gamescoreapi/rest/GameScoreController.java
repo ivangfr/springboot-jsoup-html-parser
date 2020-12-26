@@ -11,29 +11,31 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/games")
 public class GameScoreController {
 
     private final GameScoreService gameScoreService;
     private final MapperFacade mapperFacade;
 
     @ApiOperation(
-            value = "Get all Game Score with pagination",
+            value = "Get all game scores or filtered by title with pagination",
             notes = "To sort the results by a specified field, use in 'sort' field a string like: field name,[asc|desc]")
-    @GetMapping("/games")
-    public Page<GameScoreDto> getAllGameScoreByPage(Pageable pageable) {
-        return gameScoreService.getAllGameScoreByPage(pageable)
-                .map(gameScore -> mapperFacade.map(gameScore, GameScoreDto.class));
+    @GetMapping
+    public Page<GameScoreDto> getGameScores(Pageable pageable, @RequestParam(required = false) String title) {
+        Page<GameScore> gameScorePage = title == null ?
+                gameScoreService.getGameScores(pageable) : gameScoreService.getGameScores(pageable, title);
+        return gameScorePage.map(gameScore -> mapperFacade.map(gameScore, GameScoreDto.class));
     }
 
-    @ApiOperation("Get Game Score filter by Title")
-    @GetMapping("/games/{title}")
-    public GameScoreDto getGameScoreByTitle(@PathVariable String title) {
-        GameScore gameScore = gameScoreService.getGameScoreByTitle(title.trim());
+    @ApiOperation("Get a specific game score filtered by id")
+    @GetMapping("{id}")
+    public GameScoreDto getGameScore(@PathVariable Long id) {
+        GameScore gameScore = gameScoreService.getGameScore(id);
         return mapperFacade.map(gameScore, GameScoreDto.class);
     }
 
