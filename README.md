@@ -57,21 +57,21 @@ The goal of this project is to get a list of games and their scores from a websi
 
 ## Running Applications as Docker containers
 
-### Build Application’s Docker Image
+### Build Docker Images
 
 - In a terminal, make sure you are in `springboot-jsoup-html-parser` root folder
 
 - Run the following script to build the Docker images
   - JVM
     ```
-    ./build-apps.sh
+    ./docker-build.sh
     ```
   - Native (it's not working yet, see [Issues](#issues))
     ```
-    ./build-apps.sh native
+    ./docker-build.sh native
     ```
   
-### Application’s Environment Variables
+### Environment Variables
 
 - **game-score-api**
 
@@ -87,7 +87,7 @@ The goal of this project is to get a list of games and their scores from a websi
   | `MONGODB_HOST`       | Specify host of the `Mongo` database to use (default `localhost`) |
   | `MONGODB_PORT`       | Specify port of the `Mongo` database to use (default `27017`)     |
 
-### Start Application’s Docker Container
+### Start Docker Container
 
 - In a terminal, execute the command below to run `game-score-collector` Docker container
   ```
@@ -113,7 +113,7 @@ The goal of this project is to get a list of games and their scores from a websi
 
 ## Testing
 
-- A fast way to test the application is by calling a `game-score-api` endpoint using `curl`.
+- The easiest way to test the application is by calling a `game-score-api` endpoint using `curl`.
 
   For instance, the command below returns the game score results with pagination: page 0, size 10, sorted descending by `score` field.
   ```
@@ -144,7 +144,7 @@ The goal of this project is to get a list of games and their scores from a websi
     docker stop game-score-api
     ```
 
-- Stop and remove docker-compose containers, networks and volumes
+- Stop and remove docker-compose containers, network and volumes by running the command below. Make sure you are in `springboot-jsoup-html-parser` root folder
   ```
   docker-compose down -v
   ```
@@ -333,22 +333,22 @@ Both `game-score-api` and `game-score-collector` have a set of test cases. In or
   	at org.springframework.context.annotation.ConfigurationClassParser$DeferredImportSelectorGroupingHandler.processGroupImports(ConfigurationClassParser.java:809) ~[na:na]
   	at org.springframework.context.annotation.ConfigurationClassParser$DeferredImportSelectorHandler.process(ConfigurationClassParser.java:780) ~[na:na]
   	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:193) ~[na:na]
-  	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:336) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:5.3.2]
-  	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:252) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:5.3.2]
-  	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:285) ~[na:na]
-  	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:99) ~[na:na]
-  	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:751) ~[na:na]
-  	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:569) ~[na:na]
+  	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:331) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:5.3.5]
+  	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:247) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:5.3.5]
+  	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:311) ~[na:na]
+  	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:112) ~[na:na]
+  	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:746) ~[na:na]
+  	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:564) ~[na:na]
   	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:144) ~[na:na]
-  	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:767) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:2.4.1]
-  	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:759) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:2.4.1]
-  	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:426) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:2.4.1]
-  	at org.springframework.boot.SpringApplication.run(SpringApplication.java:326) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:2.4.1]
-  	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1309) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:2.4.1]
-  	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1298) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:2.4.1]
-  	at com.mycompany.gamescoreapi.GameScoreApiApplication.main(GameScoreApiApplication.java:12) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:na]
+  	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:769) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:2.4.4]
+  	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:761) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:2.4.4]
+  	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:426) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:2.4.4]
+  	at org.springframework.boot.SpringApplication.run(SpringApplication.java:326) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:2.4.4]
+  	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1313) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:2.4.4]
+  	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1302) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:2.4.4]
+  	at com.mycompany.gamescoreapi.GameScoreApiApplication.main(GameScoreApiApplication.java:10) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:na]
   Caused by: java.io.FileNotFoundException: class path resource [org/springframework/data/mongodb/config/GeoJsonConfiguration.class] cannot be opened because it does not exist
-  	at org.springframework.core.io.ClassPathResource.getInputStream(ClassPathResource.java:180) ~[na:na]
+  	at org.springframework.core.io.ClassPathResource.getInputStream(ClassPathResource.java:187) ~[na:na]
   	at org.springframework.core.type.classreading.SimpleMetadataReader.getClassReader(SimpleMetadataReader.java:55) ~[na:na]
   	at org.springframework.core.type.classreading.SimpleMetadataReader.<init>(SimpleMetadataReader.java:49) ~[na:na]
   	at org.springframework.core.type.classreading.SimpleMetadataReaderFactory.getMetadataReader(SimpleMetadataReaderFactory.java:103) ~[na:na]

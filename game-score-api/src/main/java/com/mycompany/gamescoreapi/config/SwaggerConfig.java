@@ -7,17 +7,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.data.domain.Pageable;
 import springfox.documentation.builders.AlternateTypeBuilder;
-import springfox.documentation.builders.AlternateTypePropertyBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.schema.AlternateTypeRule;
 import springfox.documentation.schema.AlternateTypeRuleConvention;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,7 +22,6 @@ import static springfox.documentation.builders.PathSelectors.regex;
 import static springfox.documentation.schema.AlternateTypeRules.newRule;
 
 @Configuration
-@EnableSwagger2
 public class SwaggerConfig {
 
     @Value("${spring.application.name}")
@@ -67,16 +63,10 @@ public class SwaggerConfig {
     private Type pageableMixin() {
         return new AlternateTypeBuilder()
                 .fullyQualifiedClassName(String.format("%s.generated.%s", Pageable.class.getPackage().getName(), Pageable.class.getSimpleName()))
-                .withProperties(Arrays.asList(property(Integer.class, "page"), property(Integer.class, "size"), property(String.class, "sort")))
+                .property(p -> p.name("page").type(Integer.class).canRead(true).canWrite(true))
+                .property(p -> p.name("size").type(Integer.class).canRead(true).canWrite(true))
+                .property(p -> p.name("sort").type(String.class).canRead(true).canWrite(true))
                 .build();
-    }
-
-    private AlternateTypePropertyBuilder property(Class<?> type, String name) {
-        return new AlternateTypePropertyBuilder()
-                .withName(name)
-                .withType(type)
-                .withCanRead(true)
-                .withCanWrite(true);
     }
     // --
 
