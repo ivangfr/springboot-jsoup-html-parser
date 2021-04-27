@@ -2,7 +2,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <parent>
         <groupId>com.mycompany</groupId>
         <artifactId>springboot-jsoup-html-parser</artifactId>
@@ -15,8 +14,9 @@
     <description>Demo project for Spring Boot</description>
 
     <properties>
-        <springfox.version>3.0.0</springfox.version>
-        <orika.version>1.5.4</orika.version>
+        <!--<springdoc-openapi.version>1.5.8</springdoc-openapi.version>-->
+        <org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
+        <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
     </properties>
 
     <dependencies>
@@ -33,18 +33,21 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Springfox -->
+        <!-- SpringDoc OpenApi -->
+        <!-- It's commented for now as it's not working with spring-native -->
+        <!--
         <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-boot-starter</artifactId>
-            <version>${springfox.version}</version>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>${springdoc-openapi.version}</version>
         </dependency>
+        -->
 
-        <!-- Orika -->
+        <!-- MapStruct -->
         <dependency>
-            <groupId>ma.glasnost.orika</groupId>
-            <artifactId>orika-core</artifactId>
-            <version>${orika.version}</version>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${org.mapstruct.version}</version>
         </dependency>
 
         <dependency>
@@ -76,6 +79,29 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok-mapstruct-binding</artifactId>
+                            <version>${lombok-mapstruct-binding.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${org.mapstruct.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
         </plugins>

@@ -2,9 +2,9 @@
 
 if [ "$1" = "native" ];
 then
-  ./mvnw clean spring-boot:build-image -DskipTests --projects game-score-api
-  ./mvnw clean spring-boot:build-image -DskipTests --projects game-score-collector
+  ./mvnw clean spring-boot:build-image --projects game-score-api -DskipTests
+  ./mvnw clean spring-boot:build-image --projects game-score-collector -DskipTests
 else
-  ./mvnw clean compile jib:dockerBuild -DskipTests --projects game-score-api
-  ./mvnw clean compile jib:dockerBuild -DskipTests --projects game-score-collector
+  ./mvnw clean package jib:dockerBuild --projects game-score-api -DskipTests
+  ./mvnw clean package jib:dockerBuild --projects game-score-collector -DskipTests
 fi

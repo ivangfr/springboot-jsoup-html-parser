@@ -3,17 +3,23 @@ package com.mycompany.gamescorecollector.properties;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Component
 @Data
-//@Validated
+@Validated
 @ConfigurationProperties(prefix = "app")
 public class CollectorProperties {
 
-    //@NotNull
+    @NotNull
     private Mode mode;
 
-    //@NotNull
+    @NotNull
     private Website website;
 
     public enum Mode {
@@ -21,16 +27,16 @@ public class CollectorProperties {
     }
 
     @Data
-    //@Valid
+    @Valid
     public static class Website {
 
-        //@NotBlank
+        @NotBlank
         private String url;
 
-        //@Min(0)
+        @Min(0)
         private int minPage;
 
-        //@Min(0)
+        @Min(0)
         private int maxPage;
     }
 

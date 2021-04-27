@@ -1,11 +1,11 @@
 package com.mycompany.gamescoreapi.rest;
 
+import com.mycompany.gamescoreapi.mapper.GameScoreMapper;
 import com.mycompany.gamescoreapi.model.GameScore;
 import com.mycompany.gamescoreapi.rest.dto.GameScoreDto;
 import com.mycompany.gamescoreapi.service.GameScoreService;
-import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import ma.glasnost.orika.MapperFacade;
+//import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,23 +20,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class GameScoreController {
 
     private final GameScoreService gameScoreService;
-    private final MapperFacade mapperFacade;
+    private final GameScoreMapper gameScoreMapper;
 
-    @ApiOperation(
-            value = "Get all game scores or filtered by title with pagination",
-            notes = "To sort the results by a specified field, use in 'sort' field a string like: field name,[asc|desc]")
     @GetMapping
-    public Page<GameScoreDto> getGameScores(Pageable pageable, @RequestParam(required = false) String title) {
+    // -- It's commented for now as it's not working with spring-native
+    //public Page<GameScoreDto> getGameScores(@RequestParam(required = false) String title, @ParameterObject Pageable pageable) {
+    public Page<GameScoreDto> getGameScores(@RequestParam(required = false) String title, Pageable pageable) {
         Page<GameScore> gameScorePage = title == null ?
                 gameScoreService.getGameScores(pageable) : gameScoreService.getGameScores(pageable, title);
-        return gameScorePage.map(gameScore -> mapperFacade.map(gameScore, GameScoreDto.class));
+        return gameScorePage.map(gameScoreMapper::toGameScoreDto);
     }
 
-    @ApiOperation("Get a specific game score filtered by id")
     @GetMapping("{id}")
     public GameScoreDto getGameScore(@PathVariable Long id) {
         GameScore gameScore = gameScoreService.getGameScore(id);
-        return mapperFacade.map(gameScore, GameScoreDto.class);
+        return gameScoreMapper.toGameScoreDto(gameScore);
     }
 
 }
