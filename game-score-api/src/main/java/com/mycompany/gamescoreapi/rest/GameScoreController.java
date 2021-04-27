@@ -5,7 +5,7 @@ import com.mycompany.gamescoreapi.model.GameScore;
 import com.mycompany.gamescoreapi.rest.dto.GameScoreDto;
 import com.mycompany.gamescoreapi.service.GameScoreService;
 import lombok.RequiredArgsConstructor;
-//import org.springdoc.api.annotations.ParameterObject;
+import org.springdoc.api.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,9 +23,7 @@ public class GameScoreController {
     private final GameScoreMapper gameScoreMapper;
 
     @GetMapping
-    // -- It's commented for now as it's not working with spring-native
-    //public Page<GameScoreDto> getGameScores(@RequestParam(required = false) String title, @ParameterObject Pageable pageable) {
-    public Page<GameScoreDto> getGameScores(@RequestParam(required = false) String title, Pageable pageable) {
+    public Page<GameScoreDto> getGameScores(@RequestParam(required = false) String title, @ParameterObject Pageable pageable) {
         Page<GameScore> gameScorePage = title == null ?
                 gameScoreService.getGameScores(pageable) : gameScoreService.getGameScores(pageable, title);
         return gameScorePage.map(gameScoreMapper::toGameScoreDto);

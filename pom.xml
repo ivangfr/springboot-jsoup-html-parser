@@ -49,10 +49,7 @@
                             <BP_BOOT_NATIVE_IMAGE>1</BP_BOOT_NATIVE_IMAGE>
                             <BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
                                 -Dspring.native.remove-yaml-support=true
-                                -Dspring.spel.ignore=true
-                                --enable-http
-                                --enable-https
-                                -H:+ReportExceptionStackTraces
+                                --enable-url-protocols=http,https
                             </BP_BOOT_NATIVE_IMAGE_BUILD_ARGUMENTS>
                         </env>
                     </image>
@@ -77,7 +74,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <removeSpelSupport>true</removeSpelSupport>
                     <removeYamlSupport>true</removeYamlSupport>
                 </configuration>
             </plugin>

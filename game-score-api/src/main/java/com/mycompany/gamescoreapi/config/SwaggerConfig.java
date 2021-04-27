@@ -1,19 +1,17 @@
 package com.mycompany.gamescoreapi.config;
 
-//import io.swagger.v3.oas.models.Components;
-//import io.swagger.v3.oas.models.OpenAPI;
-//import io.swagger.v3.oas.models.info.Info;
-//import org.springdoc.core.GroupedOpenApi;
-//import org.springdoc.core.SpringDocUtils;
-//import org.springframework.beans.factory.annotation.Value;
-//import org.springframework.context.annotation.Bean;
-//import org.springframework.context.annotation.Configuration;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import org.springdoc.core.GroupedOpenApi;
+import org.springdoc.core.SpringDocUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-//@Configuration
+@Configuration
 public class SwaggerConfig {
 
-    // -- It's commented for now as it's not working with spring-native
-    /*
     @Value("${spring.application.name}")
     private String applicationName;
 
@@ -37,6 +35,5 @@ public class SwaggerConfig {
         SpringDocUtils.getConfig()
                 .replaceWithClass(org.springframework.data.domain.Pageable.class, org.springdoc.core.converters.models.Pageable.class);
     }
-    */
 
 }
