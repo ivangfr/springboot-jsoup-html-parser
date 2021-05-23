@@ -66,7 +66,7 @@ The goal of this project is to get a list of games and their scores from a websi
     ```
     ./docker-build.sh
     ```
-  - Native (it's not working yet for `game-score-api`, see [Issues](#issues))
+  - Native
     ```
     ./docker-build.sh native
     ```
@@ -87,33 +87,31 @@ The goal of this project is to get a list of games and their scores from a websi
   | `MONGODB_HOST`       | Specify host of the `Mongo` database to use (default `localhost`) |
   | `MONGODB_PORT`       | Specify port of the `Mongo` database to use (default `27017`)     |
 
-### Start Docker Container
+### Start Docker Containers
 
 - In a terminal, execute the command below to run `game-score-collector` Docker container
   ```
-  docker run --rm \
-    --name game-score-collector \
+  docker run --rm --name game-score-collector \
+    -e MONGODB_HOST=mongodb \
+    -e SPRING_DATA_MONGODB_USERNAME=gamescoreuser \
+    -e SPRING_DATA_MONGODB_PASSWORD=gamescorepass \
     --network=springboot-jsoup-html-parser_default \
-    --env MONGODB_HOST=mongodb \
-    --env SPRING_DATA_MONGODB_USERNAME=gamescoreuser \
-    --env SPRING_DATA_MONGODB_PASSWORD=gamescorepass \
-    docker.mycompany.com/game-score-collector:1.0.0
+    ivanfranchin/game-score-collector:1.0.0
   ```
 
 - Then, execute the following command to run `game-score-api` Docker container in detached mode
   ```
-  docker run -d --rm -p 8080:8080 \
-    --name game-score-api \
+  docker run --rm --name game-score-api -p 8080:8080 \
+    -e MONGODB_HOST=mongodb \
+    -e SPRING_DATA_MONGODB_USERNAME=gamescoreuser \
+    -e SPRING_DATA_MONGODB_PASSWORD=gamescorepass \
     --network=springboot-jsoup-html-parser_default \
-    --env MONGODB_HOST=mongodb \
-    --env SPRING_DATA_MONGODB_USERNAME=gamescoreuser \
-    --env SPRING_DATA_MONGODB_PASSWORD=gamescorepass \
-    docker.mycompany.com/game-score-api:1.0.0
+    ivanfranchin/game-score-api:1.0.0
   ```
 
 ## Testing
 
-- The following `curl` command returns the game score results with pagination: page 0, size 10, sorted descending by `score` field.
+- In a terminal, the following `curl` command returns the game score results with pagination: page 0, size 10, sorted descending by `score` field.
   ```
   curl -i "http://localhost:8080/api/games?page=0&size=10&sort=score%2Cdesc"
   ```
@@ -139,14 +137,8 @@ The goal of this project is to get a list of games and their scores from a websi
 
 ## Shutdown
 
-- Stop `game-score-api`
-  - If it was started with `Maven`, go to the terminal where it is running and press `Ctrl+C`
-  - If it was started as a Docker container, run the following command in a terminal
-    ```
-    docker stop game-score-api
-    ```
-
-- Stop and remove docker-compose containers, network and volumes by running the command below. Make sure you are in `springboot-jsoup-html-parser` root folder
+- To stop `game-score-api`, go to the terminal where it is running and press `Ctrl+C`
+- To stop and remove docker-compose containers, network and volumes, go to a terminal and, inside `springboot-jsoup-html-parser` root folder, run the following command
   ```
   docker-compose down -v
   ```
@@ -156,60 +148,56 @@ The goal of this project is to get a list of games and their scores from a websi
 Both `game-score-api` and `game-score-collector` have a set of test cases. In order to run them
 
 - In a terminal, make sure you are inside `springboot-jsoup-html-parser` root folder
-
-- Execute the following command
+- Execute the following command (it's not working, see [issues](#issues))
   ```
-  ./mvnw clean test
+  ./mvnw clean package test
   ```
 
 ## Issues
 
-- The `game-score-api` docker native image builds successfully but, an exception is thrown at runtime. It's related to `springdoc-openapi`.
+- The following exception is thrown when running the test cases
   ```
-  ERROR 1 --- [           main] o.s.boot.SpringApplication               : Application run failed
-  
-  java.lang.IllegalStateException: Error processing condition on org.springdoc.core.SpringDocConfiguration.springdocBeanFactoryPostProcessor
-  	at org.springframework.boot.autoconfigure.condition.SpringBootCondition.matches(SpringBootCondition.java:60) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:na]
-  	at org.springframework.context.annotation.ConditionEvaluator.shouldSkip(ConditionEvaluator.java:108) ~[na:na]
-  	at org.springframework.context.annotation.ConfigurationClassBeanDefinitionReader.loadBeanDefinitionsForBeanMethod(ConfigurationClassBeanDefinitionReader.java:193) ~[na:na]
-  	at org.springframework.context.annotation.ConfigurationClassBeanDefinitionReader.loadBeanDefinitionsForConfigurationClass(ConfigurationClassBeanDefinitionReader.java:153) ~[na:na]
-  	at org.springframework.context.annotation.ConfigurationClassBeanDefinitionReader.loadBeanDefinitions(ConfigurationClassBeanDefinitionReader.java:129) ~[na:na]
-  	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:343) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:5.3.6]
-  	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:247) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:5.3.6]
-  	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:311) ~[na:na]
-  	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:112) ~[na:na]
-  	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:746) ~[na:na]
-  	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:564) ~[na:na]
-  	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:144) ~[na:na]
-  	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:782) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:na]
-  	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:774) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:na]
-  	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:na]
-  	at org.springframework.boot.SpringApplication.run(SpringApplication.java:339) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:na]
-  	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1340) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:na]
-  	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1329) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:na]
-  	at com.mycompany.gamescoreapi.GameScoreApiApplication.main(GameScoreApiApplication.java:13) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:na]
-  Caused by: java.lang.IllegalStateException: java.io.FileNotFoundException: class path resource [org/springdoc/core/CacheOrGroupedOpenApiCondition$OnCacheDisabled.class] cannot be opened because it does not exist
-  	at org.springframework.boot.autoconfigure.condition.AbstractNestedCondition$MemberConditions.getMetadata(AbstractNestedCondition.java:149) ~[na:na]
-  	at org.springframework.boot.autoconfigure.condition.AbstractNestedCondition$MemberConditions.getMemberConditions(AbstractNestedCondition.java:121) ~[na:na]
-  	at org.springframework.boot.autoconfigure.condition.AbstractNestedCondition$MemberConditions.<init>(AbstractNestedCondition.java:114) ~[na:na]
-  	at org.springframework.boot.autoconfigure.condition.AbstractNestedCondition.getMatchOutcome(AbstractNestedCondition.java:62) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:na]
-  	at org.springframework.boot.autoconfigure.condition.SpringBootCondition.matches(SpringBootCondition.java:47) ~[com.mycompany.gamescoreapi.GameScoreApiApplication:na]
-  	... 18 common frames omitted
-  Caused by: java.io.FileNotFoundException: class path resource [org/springdoc/core/CacheOrGroupedOpenApiCondition$OnCacheDisabled.class] cannot be opened because it does not exist
-  	at org.springframework.core.io.ClassPathResource.getInputStream(ClassPathResource.java:187) ~[na:na]
-  	at org.springframework.core.type.classreading.SimpleMetadataReader.getClassReader(SimpleMetadataReader.java:55) ~[na:na]
-  	at org.springframework.core.type.classreading.SimpleMetadataReader.<init>(SimpleMetadataReader.java:49) ~[na:na]
-  	at org.springframework.core.type.classreading.SimpleMetadataReaderFactory.getMetadataReader(SimpleMetadataReaderFactory.java:103) ~[na:na]
-  	at org.springframework.core.type.classreading.SimpleMetadataReaderFactory.getMetadataReader(SimpleMetadataReaderFactory.java:81) ~[na:na]
-  	at org.springframework.boot.autoconfigure.condition.AbstractNestedCondition$MemberConditions.getMetadata(AbstractNestedCondition.java:146) ~[na:na]
-  	... 22 common frames omitted
+  [ERROR] Failed to execute goal org.springframework.experimental:spring-aot-maven-plugin:0.9.2:test-generate (test-generate) on project springboot-jsoup-html-parser: Build failed during Spring AOT test code generation: Unable to execute mojo: Compilation failure:
+  [ERROR] /Users/ivan.franchin/github-projects/springboot-jsoup-html-parser/target/generated-test-sources/spring-aot/src/test/java/org/springframework/aot/StaticSpringFactories.java:[7,32] package org.springframework.util does not exist
+  [ERROR] /Users/ivan.franchin/github-projects/springboot-jsoup-html-parser/target/generated-test-sources/spring-aot/src/test/java/org/springframework/aot/StaticSpringFactories.java:[8,32] package org.springframework.util does not exist
+  [ERROR] /Users/ivan.franchin/github-projects/springboot-jsoup-html-parser/target/generated-test-sources/spring-aot/src/test/java/org/springframework/aot/StaticSpringFactories.java:[14,17] cannot find symbol
+  [ERROR]   symbol:   class MultiValueMap
+  [ERROR]   location: class org.springframework.aot.StaticSpringFactories
+  [ERROR] /Users/ivan.franchin/github-projects/springboot-jsoup-html-parser/target/generated-test-sources/spring-aot/src/test/java/org/springframework/aot/StaticSpringFactories.java:[16,17] cannot find symbol
+  [ERROR]   symbol:   class MultiValueMap
+  [ERROR]   location: class org.springframework.aot.StaticSpringFactories
+  [ERROR] /Users/ivan.franchin/github-projects/springboot-jsoup-html-parser/target/generated-test-sources/spring-aot/src/test/java/org/springframework/core/io/support/SpringFactoriesLoader.java:[23,34] package org.apache.commons.logging does not exist
+  [ERROR] /Users/ivan.franchin/github-projects/springboot-jsoup-html-parser/target/generated-test-sources/spring-aot/src/test/java/org/springframework/core/io/support/SpringFactoriesLoader.java:[24,34] package org.apache.commons.logging does not exist
+  [ERROR] /Users/ivan.franchin/github-projects/springboot-jsoup-html-parser/target/generated-test-sources/spring-aot/src/test/java/org/springframework/core/io/support/SpringFactoriesLoader.java:[27,32] package org.springframework.lang does not exist
+  [ERROR] /Users/ivan.franchin/github-projects/springboot-jsoup-html-parser/target/generated-test-sources/spring-aot/src/test/java/org/springframework/core/io/support/SpringFactoriesLoader.java:[28,32] package org.springframework.util does not exist
+  [ERROR] /Users/ivan.franchin/github-projects/springboot-jsoup-html-parser/target/generated-test-sources/spring-aot/src/test/java/org/springframework/core/io/support/SpringFactoriesLoader.java:[32,30] cannot find symbol
+  [ERROR]   symbol:   class Log
+  [ERROR]   location: class org.springframework.core.io.support.SpringFactoriesLoader
+  [ERROR] /Users/ivan.franchin/github-projects/springboot-jsoup-html-parser/target/generated-test-sources/spring-aot/src/test/java/org/springframework/core/io/support/SpringFactoriesLoader.java:[41,72] cannot find symbol
+  [ERROR]   symbol:   class Nullable
+  [ERROR]   location: class org.springframework.core.io.support.SpringFactoriesLoader
+  [ERROR] /Users/ivan.franchin/github-projects/springboot-jsoup-html-parser/target/generated-test-sources/spring-aot/src/test/java/org/springframework/core/io/support/SpringFactoriesLoader.java:[60,76] cannot find symbol
+  [ERROR]   symbol:   class Nullable
+  [ERROR]   location: class org.springframework.core.io.support.SpringFactoriesLoader
+  [ERROR] /Users/ivan.franchin/github-projects/springboot-jsoup-html-parser/target/generated-test-sources/spring-aot/src/test/java/org/springframework/aot/StaticSpringFactories.java:[14,72] cannot find symbol
+  [ERROR]   symbol:   class LinkedMultiValueMap
+  [ERROR]   location: class org.springframework.aot.StaticSpringFactories
+  [ERROR] /Users/ivan.franchin/github-projects/springboot-jsoup-html-parser/target/generated-test-sources/spring-aot/src/test/java/org/springframework/aot/StaticSpringFactories.java:[16,58] cannot find symbol
+  [ERROR]   symbol:   class LinkedMultiValueMap
+  [ERROR]   location: class org.springframework.aot.StaticSpringFactories
+  [ERROR] /Users/ivan.franchin/github-projects/springboot-jsoup-html-parser/target/generated-test-sources/spring-aot/src/test/java/org/springframework/core/io/support/SpringFactoriesLoader.java:[32,43] cannot find symbol
+  [ERROR]   symbol:   variable LogFactory
+  [ERROR]   location: class org.springframework.core.io.support.SpringFactoriesLoader
+  [ERROR] /Users/ivan.franchin/github-projects/springboot-jsoup-html-parser/target/generated-test-sources/spring-aot/src/test/java/org/springframework/core/io/support/SpringFactoriesLoader.java:[42,17] cannot find symbol
+  [ERROR]   symbol:   variable Assert
+  [ERROR]   location: class org.springframework.core.io.support.SpringFactoriesLoader
   ```
 
 - In `game-score-collector`, the annotation `@EnableMongoAuditing` is commented out due to the following exception at runtime. I've created this [issue #445](https://github.com/spring-projects-experimental/spring-native/issues/445)
   ```
   ERROR 1 --- [           main] o.s.boot.SpringApplication               : Application run failed
   
-  org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'websiteCollector' defined in class path resource [com/mycompany/gamescorecollector/collector/WebsiteCollector.class]: Unsatisfied dependency expressed through constructor parameter 3; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'gameScoreServiceImpl' defined in class path resource [com/mycompany/gamescorecollector/service/GameScoreServiceImpl.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'gameScoreRepository' defined in com.mycompany.gamescorecollector.repository.GameScoreRepository defined in @EnableMongoRepositories declared on MongoRepositoriesRegistrar.EnableMongoRepositoriesConfiguration: Cannot resolve reference to bean 'mongoTemplate' while setting bean property 'mongoOperations'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'mongoTemplate' defined in class path resource [org/springframework/boot/autoconfigure/data/mongo/MongoDatabaseFactoryDependentConfiguration.class]: Unsatisfied dependency expressed through method 'mongoTemplate' parameter 1; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'mappingMongoConverter' defined in class path resource [org/springframework/boot/autoconfigure/data/mongo/MongoDatabaseFactoryDependentConfiguration.class]: Initialization of bean failed; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'org.springframework.data.mongodb.core.mapping.event.AuditingEntityCallback': Cannot create inner bean '(inner bean)#3c6fec39' of type [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean] while setting constructor argument; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name '(inner bean)#3c6fec39': Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean]: No default constructor found; nested exception is java.lang.NoSuchMethodException: org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean.<init>()
+  org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'websiteCollector' defined in class path resource [com/mycompany/gamescorecollector/collector/WebsiteCollector.class]: Unsatisfied dependency expressed through constructor parameter 3; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'gameScoreServiceImpl' defined in class path resource [com/mycompany/gamescorecollector/service/GameScoreServiceImpl.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'gameScoreRepository' defined in com.mycompany.gamescorecollector.repository.GameScoreRepository defined in @EnableMongoRepositories declared on MongoRepositoriesRegistrar.EnableMongoRepositoriesConfiguration: Cannot resolve reference to bean 'mongoTemplate' while setting bean property 'mongoOperations'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'mongoTemplate' defined in class path resource [org/springframework/boot/autoconfigure/data/mongo/MongoDatabaseFactoryDependentConfiguration.class]: Unsatisfied dependency expressed through method 'mongoTemplate' parameter 1; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'mappingMongoConverter' defined in class path resource [org/springframework/boot/autoconfigure/data/mongo/MongoDatabaseFactoryDependentConfiguration.class]: Initialization of bean failed; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'org.springframework.data.mongodb.core.mapping.event.AuditingEntityCallback': Cannot create inner bean '(inner bean)#5928b22f' of type [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean] while setting constructor argument; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name '(inner bean)#5928b22f': Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean]: No default constructor found; nested exception is java.lang.NoSuchMethodException: org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean.<init>()
   	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:800) ~[na:na]
   	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:229) ~[na:na]
   	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1354) ~[na:na]
@@ -223,14 +211,14 @@ Both `game-score-api` and `game-score-collector` have a set of test cases. In or
   	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:944) ~[na:na]
   	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:918) ~[na:na]
   	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:583) ~[na:na]
-  	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:782) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:na]
-  	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:774) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:na]
-  	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:na]
-  	at org.springframework.boot.SpringApplication.run(SpringApplication.java:339) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:na]
-  	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1340) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:na]
-  	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1329) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:na]
+  	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:771) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:2.4.6]
+  	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:763) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:2.4.6]
+  	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:438) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:2.4.6]
+  	at org.springframework.boot.SpringApplication.run(SpringApplication.java:339) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:2.4.6]
+  	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1329) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:2.4.6]
+  	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1318) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:2.4.6]
   	at com.mycompany.gamescorecollector.GameScoreCollectorApplication.main(GameScoreCollectorApplication.java:12) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:na]
-  Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'gameScoreServiceImpl' defined in class path resource [com/mycompany/gamescorecollector/service/GameScoreServiceImpl.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'gameScoreRepository' defined in com.mycompany.gamescorecollector.repository.GameScoreRepository defined in @EnableMongoRepositories declared on MongoRepositoriesRegistrar.EnableMongoRepositoriesConfiguration: Cannot resolve reference to bean 'mongoTemplate' while setting bean property 'mongoOperations'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'mongoTemplate' defined in class path resource [org/springframework/boot/autoconfigure/data/mongo/MongoDatabaseFactoryDependentConfiguration.class]: Unsatisfied dependency expressed through method 'mongoTemplate' parameter 1; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'mappingMongoConverter' defined in class path resource [org/springframework/boot/autoconfigure/data/mongo/MongoDatabaseFactoryDependentConfiguration.class]: Initialization of bean failed; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'org.springframework.data.mongodb.core.mapping.event.AuditingEntityCallback': Cannot create inner bean '(inner bean)#3c6fec39' of type [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean] while setting constructor argument; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name '(inner bean)#3c6fec39': Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean]: No default constructor found; nested exception is java.lang.NoSuchMethodException: org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean.<init>()
+  Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'gameScoreServiceImpl' defined in class path resource [com/mycompany/gamescorecollector/service/GameScoreServiceImpl.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'gameScoreRepository' defined in com.mycompany.gamescorecollector.repository.GameScoreRepository defined in @EnableMongoRepositories declared on MongoRepositoriesRegistrar.EnableMongoRepositoriesConfiguration: Cannot resolve reference to bean 'mongoTemplate' while setting bean property 'mongoOperations'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'mongoTemplate' defined in class path resource [org/springframework/boot/autoconfigure/data/mongo/MongoDatabaseFactoryDependentConfiguration.class]: Unsatisfied dependency expressed through method 'mongoTemplate' parameter 1; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'mappingMongoConverter' defined in class path resource [org/springframework/boot/autoconfigure/data/mongo/MongoDatabaseFactoryDependentConfiguration.class]: Initialization of bean failed; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'org.springframework.data.mongodb.core.mapping.event.AuditingEntityCallback': Cannot create inner bean '(inner bean)#5928b22f' of type [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean] while setting constructor argument; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name '(inner bean)#5928b22f': Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean]: No default constructor found; nested exception is java.lang.NoSuchMethodException: org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean.<init>()
   	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:800) ~[na:na]
   	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:229) ~[na:na]
   	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1354) ~[na:na]
@@ -247,7 +235,7 @@ Both `game-score-api` and `game-score-collector` have a set of test cases. In or
   	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:887) ~[na:na]
   	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791) ~[na:na]
   	... 19 common frames omitted
-  Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'gameScoreRepository' defined in com.mycompany.gamescorecollector.repository.GameScoreRepository defined in @EnableMongoRepositories declared on MongoRepositoriesRegistrar.EnableMongoRepositoriesConfiguration: Cannot resolve reference to bean 'mongoTemplate' while setting bean property 'mongoOperations'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'mongoTemplate' defined in class path resource [org/springframework/boot/autoconfigure/data/mongo/MongoDatabaseFactoryDependentConfiguration.class]: Unsatisfied dependency expressed through method 'mongoTemplate' parameter 1; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'mappingMongoConverter' defined in class path resource [org/springframework/boot/autoconfigure/data/mongo/MongoDatabaseFactoryDependentConfiguration.class]: Initialization of bean failed; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'org.springframework.data.mongodb.core.mapping.event.AuditingEntityCallback': Cannot create inner bean '(inner bean)#3c6fec39' of type [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean] while setting constructor argument; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name '(inner bean)#3c6fec39': Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean]: No default constructor found; nested exception is java.lang.NoSuchMethodException: org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean.<init>()
+  Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'gameScoreRepository' defined in com.mycompany.gamescorecollector.repository.GameScoreRepository defined in @EnableMongoRepositories declared on MongoRepositoriesRegistrar.EnableMongoRepositoriesConfiguration: Cannot resolve reference to bean 'mongoTemplate' while setting bean property 'mongoOperations'; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'mongoTemplate' defined in class path resource [org/springframework/boot/autoconfigure/data/mongo/MongoDatabaseFactoryDependentConfiguration.class]: Unsatisfied dependency expressed through method 'mongoTemplate' parameter 1; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'mappingMongoConverter' defined in class path resource [org/springframework/boot/autoconfigure/data/mongo/MongoDatabaseFactoryDependentConfiguration.class]: Initialization of bean failed; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'org.springframework.data.mongodb.core.mapping.event.AuditingEntityCallback': Cannot create inner bean '(inner bean)#5928b22f' of type [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean] while setting constructor argument; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name '(inner bean)#5928b22f': Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean]: No default constructor found; nested exception is java.lang.NoSuchMethodException: org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean.<init>()
   	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:342) ~[na:na]
   	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveValueIfNecessary(BeanDefinitionValueResolver.java:113) ~[na:na]
   	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyPropertyValues(AbstractAutowireCapableBeanFactory.java:1689) ~[na:na]
@@ -264,7 +252,7 @@ Both `game-score-api` and `game-score-collector` have a set of test cases. In or
   	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:887) ~[na:na]
   	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791) ~[na:na]
   	... 33 common frames omitted
-  Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'mongoTemplate' defined in class path resource [org/springframework/boot/autoconfigure/data/mongo/MongoDatabaseFactoryDependentConfiguration.class]: Unsatisfied dependency expressed through method 'mongoTemplate' parameter 1; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'mappingMongoConverter' defined in class path resource [org/springframework/boot/autoconfigure/data/mongo/MongoDatabaseFactoryDependentConfiguration.class]: Initialization of bean failed; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'org.springframework.data.mongodb.core.mapping.event.AuditingEntityCallback': Cannot create inner bean '(inner bean)#3c6fec39' of type [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean] while setting constructor argument; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name '(inner bean)#3c6fec39': Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean]: No default constructor found; nested exception is java.lang.NoSuchMethodException: org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean.<init>()
+  Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'mongoTemplate' defined in class path resource [org/springframework/boot/autoconfigure/data/mongo/MongoDatabaseFactoryDependentConfiguration.class]: Unsatisfied dependency expressed through method 'mongoTemplate' parameter 1; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'mappingMongoConverter' defined in class path resource [org/springframework/boot/autoconfigure/data/mongo/MongoDatabaseFactoryDependentConfiguration.class]: Initialization of bean failed; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'org.springframework.data.mongodb.core.mapping.event.AuditingEntityCallback': Cannot create inner bean '(inner bean)#5928b22f' of type [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean] while setting constructor argument; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name '(inner bean)#5928b22f': Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean]: No default constructor found; nested exception is java.lang.NoSuchMethodException: org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean.<init>()
   	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:800) ~[na:na]
   	at org.springframework.beans.factory.support.ConstructorResolver.instantiateUsingFactoryMethod(ConstructorResolver.java:541) ~[na:na]
   	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateUsingFactoryMethod(AbstractAutowireCapableBeanFactory.java:1334) ~[na:na]
@@ -277,7 +265,7 @@ Both `game-score-api` and `game-score-collector` have a set of test cases. In or
   	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:208) ~[na:na]
   	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveReference(BeanDefinitionValueResolver.java:330) ~[na:na]
   	... 47 common frames omitted
-  Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'mappingMongoConverter' defined in class path resource [org/springframework/boot/autoconfigure/data/mongo/MongoDatabaseFactoryDependentConfiguration.class]: Initialization of bean failed; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'org.springframework.data.mongodb.core.mapping.event.AuditingEntityCallback': Cannot create inner bean '(inner bean)#3c6fec39' of type [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean] while setting constructor argument; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name '(inner bean)#3c6fec39': Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean]: No default constructor found; nested exception is java.lang.NoSuchMethodException: org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean.<init>()
+  Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'mappingMongoConverter' defined in class path resource [org/springframework/boot/autoconfigure/data/mongo/MongoDatabaseFactoryDependentConfiguration.class]: Initialization of bean failed; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'org.springframework.data.mongodb.core.mapping.event.AuditingEntityCallback': Cannot create inner bean '(inner bean)#5928b22f' of type [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean] while setting constructor argument; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name '(inner bean)#5928b22f': Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean]: No default constructor found; nested exception is java.lang.NoSuchMethodException: org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean.<init>()
   	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:610) ~[na:na]
   	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:524) ~[na:na]
   	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:335) ~[na:na]
@@ -290,7 +278,7 @@ Both `game-score-api` and `game-score-collector` have a set of test cases. In or
   	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:887) ~[na:na]
   	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791) ~[na:na]
   	... 57 common frames omitted
-  Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'org.springframework.data.mongodb.core.mapping.event.AuditingEntityCallback': Cannot create inner bean '(inner bean)#3c6fec39' of type [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean] while setting constructor argument; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name '(inner bean)#3c6fec39': Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean]: No default constructor found; nested exception is java.lang.NoSuchMethodException: org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean.<init>()
+  Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'org.springframework.data.mongodb.core.mapping.event.AuditingEntityCallback': Cannot create inner bean '(inner bean)#5928b22f' of type [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean] while setting constructor argument; nested exception is org.springframework.beans.factory.BeanCreationException: Error creating bean with name '(inner bean)#5928b22f': Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean]: No default constructor found; nested exception is java.lang.NoSuchMethodException: org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean.<init>()
   	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveInnerBean(BeanDefinitionValueResolver.java:389) ~[na:na]
   	at org.springframework.beans.factory.support.BeanDefinitionValueResolver.resolveValueIfNecessary(BeanDefinitionValueResolver.java:134) ~[na:na]
   	at org.springframework.beans.factory.support.ConstructorResolver.resolveConstructorArguments(ConstructorResolver.java:693) ~[na:na]
@@ -317,14 +305,14 @@ Both `game-score-api` and `game-score-collector` have a set of test cases. In or
   	at org.springframework.data.mapping.callback.EntityCallbackDiscoverer.<init>(EntityCallbackDiscoverer.java:71) ~[na:na]
   	at org.springframework.data.mapping.callback.DefaultEntityCallbacks.<init>(DefaultEntityCallbacks.java:59) ~[na:na]
   	at org.springframework.data.mapping.callback.EntityCallbacks.create(EntityCallbacks.java:85) ~[na:na]
-  	at org.springframework.data.mongodb.core.convert.MappingMongoConverter.setApplicationContext(MappingMongoConverter.java:225) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:3.1.8]
+  	at org.springframework.data.mongodb.core.convert.MappingMongoConverter.setApplicationContext(MappingMongoConverter.java:225) ~[com.mycompany.gamescorecollector.GameScoreCollectorApplication:3.1.9]
   	at org.springframework.context.support.ApplicationContextAwareProcessor.invokeAwareInterfaces(ApplicationContextAwareProcessor.java:128) ~[na:na]
   	at org.springframework.context.support.ApplicationContextAwareProcessor.postProcessBeforeInitialization(ApplicationContextAwareProcessor.java:102) ~[na:na]
   	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsBeforeInitialization(AbstractAutowireCapableBeanFactory.java:422) ~[na:na]
   	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1778) ~[na:na]
   	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:602) ~[na:na]
   	... 67 common frames omitted
-  Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name '(inner bean)#3c6fec39': Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean]: No default constructor found; nested exception is java.lang.NoSuchMethodException: org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean.<init>()
+  Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name '(inner bean)#5928b22f': Instantiation of bean failed; nested exception is org.springframework.beans.BeanInstantiationException: Failed to instantiate [org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean]: No default constructor found; nested exception is java.lang.NoSuchMethodException: org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean.<init>()
   	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.instantiateBean(AbstractAutowireCapableBeanFactory.java:1316) ~[na:na]
   	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1214) ~[na:na]
   	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:564) ~[na:na]
