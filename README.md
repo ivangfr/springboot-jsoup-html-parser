@@ -44,14 +44,14 @@ The goal of this project is to get a list of games and their scores from a websi
 
 - Execute the following command to run `game-score-collector`
   ```
-  ./mvnw clean package spring-boot:run --projects game-score-collector -DskipTests \
+  ./mvnw clean spring-boot:run --projects game-score-collector \
     -Dspring-boot.run.jvmArguments="-Dspring.data.mongodb.username=gamescoreuser -Dspring.data.mongodb.password=gamescorepass"
   ```
   `game-score-collector` is a Java application that does its job and terminates. Ideally, it will be executed as a cronjob, scheduled to run during specific time intervals.
 
 - Execute the command below to run `game-score-api`
   ```
-  ./mvnw clean package spring-boot:run --projects game-score-api -DskipTests \
+  ./mvnw clean spring-boot:run --projects game-score-api \
     -Dspring-boot.run.jvmArguments="-Dspring.data.mongodb.username=gamescoreuser -Dspring.data.mongodb.password=gamescorepass"
   ```
 
