@@ -142,6 +142,10 @@ The goal of this project is to get a list of games and their scores from a websi
   ```
   docker-compose down -v
   ```
+- To remove the docker images created by this project, run
+  ```
+  ./remove-docker-images.sh
+  ```
 
 ## Running Tests
 
