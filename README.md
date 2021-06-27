@@ -142,20 +142,23 @@ The goal of this project is to get a list of games and their scores from a websi
   ```
   docker-compose down -v
   ```
-- To remove the docker images created by this project, run
-  ```
-  ./remove-docker-images.sh
-  ```
 
 ## Running Tests
 
 Both `game-score-api` and `game-score-collector` have a set of test cases. In order to run them
 
 - In a terminal, make sure you are inside `springboot-jsoup-html-parser` root folder
-- Execute the following command (it's not working, see [issues](#issues))
+- Execute the following command
   ```
   ./mvnw clean test --projects game-score-api,game-score-collector
   ```
+
+## Cleanup
+
+To remove the Docker images created by this project, go to a terminal and, inside `springboot-jsoup-html-parser` root folder, run the following script
+```
+./remove-docker-images.sh
+```
 
 ## Issues
 
