@@ -14,10 +14,10 @@ The goal of this project is to get a list of games and their scores from a websi
 
   [`Spring Boot`](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/) Java Web application that exposes a REST API from where clients can retrieve the game score data stored in `MongoDB` database.
 
-  | Endpoints                 | Description                                                  |
-  | ------------------------- | ------------------------------------------------------------ |
-  | `GET /api/games [?title]` | returns all game scores or filtered by title with pagination |
-  | `GET /api/games/{id}`     | returns a specific game score filtered by id                 |
+  | Endpoints                | Description                                                  |
+  | ------------------------ | ------------------------------------------------------------ |
+  | `GET /api/games[?title]` | returns all game scores or filtered by title with pagination |
+  | `GET /api/games/{id}`    | returns a specific game score filtered by id                 |
 
 - ### game-score-collector
 
