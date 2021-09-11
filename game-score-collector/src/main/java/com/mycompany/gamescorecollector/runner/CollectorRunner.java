@@ -47,5 +47,4 @@ public class CollectorRunner implements CommandLineRunner {
         Duration duration = Duration.between(start, Instant.now());
         log.info("Collected successfully {} game score data! Execution time: {}", numGameScores, duration.toMillis());
     }
-
 }

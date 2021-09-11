@@ -25,5 +25,4 @@ public class WebsiteClient {
             return null;
         }
     }
-
 }

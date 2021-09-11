@@ -11,8 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class WebsiteContentParserTest {
 
@@ -26,30 +25,34 @@ class WebsiteContentParserTest {
     @Test
     void testDocumentNull() {
         List<GameScore> gameScores = contentParser.parse(null);
-        assertEquals(0, gameScores.size());
+
+        assertThat(gameScores.size()).isEqualTo(0);
     }
 
     @Test
     void testDocumentWithValidContent() throws IOException {
         File file = ResourceUtils.getFile("classpath:valid-content.html");
         Document document = Jsoup.parse(file, "UTF-8");
+
         List<GameScore> gameScores = contentParser.parse(document);
-        assertNotNull(gameScores);
-        assertEquals(100, gameScores.size());
-        assertEquals("Red Dead Redemption 2", gameScores.get(0).getTitle());
-        assertEquals(97, gameScores.get(0).getScore());
-        assertEquals("Grand Theft Auto V", gameScores.get(1).getTitle());
-        assertEquals(97, gameScores.get(1).getScore());
-        assertEquals("Persona 5 Royal", gameScores.get(2).getTitle());
-        assertEquals(95, gameScores.get(2).getScore());
+
+        assertThat(gameScores).isNotNull();
+        assertThat(gameScores.size()).isEqualTo(100);
+        assertThat(gameScores.get(0).getTitle()).isEqualTo("Red Dead Redemption 2");
+        assertThat(gameScores.get(0).getScore()).isEqualTo(97);
+        assertThat(gameScores.get(1).getTitle()).isEqualTo("Grand Theft Auto V");
+        assertThat(gameScores.get(1).getScore()).isEqualTo(97);
+        assertThat(gameScores.get(2).getTitle()).isEqualTo("Persona 5 Royal");
+        assertThat(gameScores.get(2).getScore()).isEqualTo(95);
     }
 
     @Test
     void testDocumentWithEmptyContent() throws IOException {
         File file = ResourceUtils.getFile("classpath:empty-content.html");
         Document document = Jsoup.parse(file, "UTF-8");
-        List<GameScore> gameScores = contentParser.parse(document);
-        assertEquals(0, gameScores.size());
-    }
 
+        List<GameScore> gameScores = contentParser.parse(document);
+
+        assertThat(gameScores.size()).isEqualTo(0);
+    }
 }

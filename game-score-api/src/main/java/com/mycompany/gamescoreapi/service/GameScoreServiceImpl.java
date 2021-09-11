@@ -28,5 +28,4 @@ public class GameScoreServiceImpl implements GameScoreService {
     public Page<GameScore> getGameScores(Pageable pageable, String title) {
         return gameScoreRepository.findByTitleContainingIgnoreCase(pageable, title);
     }
-
 }

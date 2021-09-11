@@ -9,5 +9,4 @@ public class GameScoreNotFoundException extends RuntimeException {
     public GameScoreNotFoundException(Long id) {
         super(String.format("Game with id '%s' not found", id));
     }
-
 }

@@ -68,5 +68,4 @@ public class WebsiteCollector {
         String url = collectorProperties.getWebsite().getUrl();
         return String.format("%s?page=%d", url, pageNum);
     }
-
 }

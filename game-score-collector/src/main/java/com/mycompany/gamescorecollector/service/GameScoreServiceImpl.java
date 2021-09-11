@@ -17,5 +17,4 @@ public class GameScoreServiceImpl implements GameScoreService {
     public List<GameScore> saveGameScores(List<GameScore> gameScores) {
         return gameScoreRepository.saveAll(gameScores);
     }
-
 }

@@ -30,5 +30,4 @@ public class WebsiteContentParser {
             return new GameScore(id, title, score);
         }).collect(Collectors.toList());
     }
-
 }

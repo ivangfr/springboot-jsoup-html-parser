@@ -39,5 +39,4 @@ public class CollectorProperties {
         @Min(0)
         private int maxPage;
     }
-
 }

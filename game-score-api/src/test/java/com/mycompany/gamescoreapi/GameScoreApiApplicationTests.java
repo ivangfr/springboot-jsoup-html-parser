@@ -3,7 +3,7 @@ package com.mycompany.gamescoreapi;
 
 import com.mycompany.gamescoreapi.model.GameScore;
 import com.mycompany.gamescoreapi.repository.GameScoreRepository;
-import com.mycompany.gamescoreapi.rest.dto.GameScoreDto;
+import com.mycompany.gamescoreapi.rest.dto.GameScoreResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,8 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -29,34 +28,35 @@ class GameScoreApiApplicationTests {
 
     @Test
     void givenNonExistingGameIdTestGetGameScore() {
-        ResponseEntity<GameScoreDto> responseEntity = testRestTemplate.getForEntity("/api/games/1", GameScoreDto.class);
-        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        ResponseEntity<GameScoreResponse> responseEntity = testRestTemplate.getForEntity("/api/games/1", GameScoreResponse.class);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
     void givenExistingGameIdTestGetGameScore() {
         gameScoreRepository.save(new GameScore(1L, "FIFA 2019", 95));
 
-        ResponseEntity<GameScoreDto> responseEntity = testRestTemplate.getForEntity("/api/games/1", GameScoreDto.class);
+        ResponseEntity<GameScoreResponse> responseEntity = testRestTemplate.getForEntity("/api/games/1", GameScoreResponse.class);
 
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-        assertEquals(1, responseEntity.getBody().getId());
-        assertEquals("FIFA 2019", responseEntity.getBody().getTitle());
-        assertEquals(95, responseEntity.getBody().getScore());
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isNotNull();
+        assertThat(responseEntity.getBody().getId()).isEqualTo(1);
+        assertThat(responseEntity.getBody().getTitle()).isEqualTo("FIFA 2019");
+        assertThat(responseEntity.getBody().getScore()).isEqualTo(95);
     }
 
     @Test
     void givenNoGameScoreTestGetGameScores() {
-        ParameterizedTypeReference<RestResponsePageImpl<GameScoreDto>> responseType = new ParameterizedTypeReference<>() {
+        ParameterizedTypeReference<RestResponsePageImpl<GameScoreResponse>> responseType = new ParameterizedTypeReference<>() {
         };
-        ResponseEntity<RestResponsePageImpl<GameScoreDto>> responseEntity = testRestTemplate.exchange("/api/games", HttpMethod.GET, null, responseType);
+        ResponseEntity<RestResponsePageImpl<GameScoreResponse>> responseEntity = testRestTemplate.exchange("/api/games", HttpMethod.GET, null, responseType);
 
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-        assertEquals(0, responseEntity.getBody().getTotalPages());
-        assertEquals(0, responseEntity.getBody().getTotalElements());
-        assertEquals(0, responseEntity.getBody().getContent().size());
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isNotNull();
+        assertThat(responseEntity.getBody().getTotalPages()).isEqualTo(0);
+        assertThat(responseEntity.getBody().getTotalElements()).isEqualTo(0);
+        assertThat(responseEntity.getBody().getContent().size()).isEqualTo(0);
     }
 
     @Test
@@ -64,16 +64,16 @@ class GameScoreApiApplicationTests {
         gameScoreRepository.save(new GameScore(1L, "FIFA 2019", 95));
         gameScoreRepository.save(new GameScore(2L, "Resident Evil 2", 91));
 
-        ParameterizedTypeReference<RestResponsePageImpl<GameScoreDto>> responseType = new ParameterizedTypeReference<>() {
+        ParameterizedTypeReference<RestResponsePageImpl<GameScoreResponse>> responseType = new ParameterizedTypeReference<>() {
         };
-        ResponseEntity<RestResponsePageImpl<GameScoreDto>> responseEntity = testRestTemplate.exchange("/api/games", HttpMethod.GET, null, responseType);
+        ResponseEntity<RestResponsePageImpl<GameScoreResponse>> responseEntity = testRestTemplate.exchange("/api/games", HttpMethod.GET, null, responseType);
 
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-        assertEquals(1, responseEntity.getBody().getTotalPages());
-        assertEquals(2, responseEntity.getBody().getTotalElements());
-        assertEquals(2, responseEntity.getBody().getNumberOfElements());
-        assertEquals(2, responseEntity.getBody().getContent().size());
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isNotNull();
+        assertThat(responseEntity.getBody().getTotalPages()).isEqualTo(1);
+        assertThat(responseEntity.getBody().getTotalElements()).isEqualTo(2);
+        assertThat(responseEntity.getBody().getNumberOfElements()).isEqualTo(2);
+        assertThat(responseEntity.getBody().getContent().size()).isEqualTo(2);
     }
 
     @Test
@@ -81,16 +81,15 @@ class GameScoreApiApplicationTests {
         gameScoreRepository.save(new GameScore(1L, "FIFA 2019", 95));
         gameScoreRepository.save(new GameScore(2L, "Resident Evil 2", 91));
 
-        ParameterizedTypeReference<RestResponsePageImpl<GameScoreDto>> responseType = new ParameterizedTypeReference<>() {
+        ParameterizedTypeReference<RestResponsePageImpl<GameScoreResponse>> responseType = new ParameterizedTypeReference<>() {
         };
-        ResponseEntity<RestResponsePageImpl<GameScoreDto>> responseEntity = testRestTemplate.exchange("/api/games?title=fifa", HttpMethod.GET, null, responseType);
+        ResponseEntity<RestResponsePageImpl<GameScoreResponse>> responseEntity = testRestTemplate.exchange("/api/games?title=fifa", HttpMethod.GET, null, responseType);
 
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertNotNull(responseEntity.getBody());
-        assertEquals(1, responseEntity.getBody().getTotalPages());
-        assertEquals(1, responseEntity.getBody().getTotalElements());
-        assertEquals(1, responseEntity.getBody().getNumberOfElements());
-        assertEquals(1, responseEntity.getBody().getContent().size());
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(responseEntity.getBody()).isNotNull();
+        assertThat(responseEntity.getBody().getTotalPages()).isEqualTo(1);
+        assertThat(responseEntity.getBody().getTotalElements()).isEqualTo(1);
+        assertThat(responseEntity.getBody().getNumberOfElements()).isEqualTo(1);
+        assertThat(responseEntity.getBody().getContent().size()).isEqualTo(1);
     }
-
 }

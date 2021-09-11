@@ -10,5 +10,4 @@ public class SwaggerController {
     public String redirectToSwagger() {
         return "redirect:/swagger-ui.html";
     }
-
 }

@@ -2,7 +2,7 @@ package com.mycompany.gamescoreapi.rest;
 
 import com.mycompany.gamescoreapi.mapper.GameScoreMapper;
 import com.mycompany.gamescoreapi.model.GameScore;
-import com.mycompany.gamescoreapi.rest.dto.GameScoreDto;
+import com.mycompany.gamescoreapi.rest.dto.GameScoreResponse;
 import com.mycompany.gamescoreapi.service.GameScoreService;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.api.annotations.ParameterObject;
@@ -23,16 +23,16 @@ public class GameScoreController {
     private final GameScoreMapper gameScoreMapper;
 
     @GetMapping
-    public Page<GameScoreDto> getGameScores(@RequestParam(required = false) String title, @ParameterObject Pageable pageable) {
+    public Page<GameScoreResponse> getGameScores(
+            @RequestParam(required = false) String title, @ParameterObject Pageable pageable) {
         Page<GameScore> gameScorePage = title == null ?
                 gameScoreService.getGameScores(pageable) : gameScoreService.getGameScores(pageable, title);
-        return gameScorePage.map(gameScoreMapper::toGameScoreDto);
+        return gameScorePage.map(gameScoreMapper::toGameScoreResponse);
     }
 
-    @GetMapping("{id}")
-    public GameScoreDto getGameScore(@PathVariable Long id) {
+    @GetMapping("/{id}")
+    public GameScoreResponse getGameScore(@PathVariable Long id) {
         GameScore gameScore = gameScoreService.getGameScore(id);
-        return gameScoreMapper.toGameScoreDto(gameScore);
+        return gameScoreMapper.toGameScoreResponse(gameScore);
     }
-
 }

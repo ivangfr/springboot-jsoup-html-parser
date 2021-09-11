@@ -11,5 +11,4 @@ public interface GameScoreService {
     Page<GameScore> getGameScores(Pageable pageable);
 
     Page<GameScore> getGameScores(Pageable pageable, String title);
-
 }

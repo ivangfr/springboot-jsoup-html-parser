@@ -31,11 +31,14 @@ The goal of this project is to get a list of games and their scores from a websi
 
 ## Start environment
 
-- Open a terminal and navigate to `springboot-jsoup-html-parser` root folder
-
-- Run the command below to start a `MongoDB` Docker container at port `27017`
+- Open a terminal and, inside `springboot-jsoup-html-parser` root folder, the command below
   ```
   docker-compose up -d
+  ```
+
+- Wait until `mongodb` status is `running (healthy)`. You can check it by running
+  ```
+  docker-compose ps
   ```
 
 ## Running Applications with Maven
@@ -159,7 +162,3 @@ To remove the Docker images created by this project, go to a terminal and, insid
 ```
 ./remove-docker-images.sh
 ```
-
-## Issues
-
-In `game-score-collector`, the annotation `@EnableMongoAuditing` is commented out due to the following exception at runtime. I've created this [issue #445](https://github.com/spring-projects-experimental/spring-native/issues/445)
