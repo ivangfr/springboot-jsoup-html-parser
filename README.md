@@ -6,7 +6,7 @@ The goal of this project is to get a list of games and their scores from a websi
 
 ## Project Diagram
 
-![project-diagram](images/project-diagram.png)
+![project-diagram](documentation/project-diagram.png)
 
 ## Applications
 
@@ -25,18 +25,18 @@ The goal of this project is to get a list of games and their scores from a websi
 
 ## Prerequisites
 
-- [`Java 11+`](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html)
+- [`Java 11+`](https://www.oracle.com/java/technologies/downloads/#java11)
 - [`Docker`](https://www.docker.com/)
 - [`Docker-Compose`](https://docs.docker.com/compose/install/)
 
-## Start environment
+## Start Environment
 
 - Open a terminal and, inside `springboot-jsoup-html-parser` root folder, the command below
   ```
   docker-compose up -d
   ```
 
-- Wait until `mongodb` status is `running (healthy)`. You can check it by running
+- Wait for `mongodb` Docker container to be up and running. To check it, run
   ```
   docker-compose ps
   ```
@@ -47,15 +47,13 @@ The goal of this project is to get a list of games and their scores from a websi
 
 - Execute the following command to run `game-score-collector`
   ```
-  ./mvnw clean spring-boot:run --projects game-score-collector \
-    -Dspring-boot.run.jvmArguments="-Dspring.data.mongodb.username=gamescoreuser -Dspring.data.mongodb.password=gamescorepass"
+  ./mvnw clean spring-boot:run --projects game-score-collector
   ```
   `game-score-collector` is a Java application that does its job and terminates. Ideally, it will be executed as a cronjob, scheduled to run during specific time intervals.
 
 - Execute the command below to run `game-score-api`
   ```
-  ./mvnw clean spring-boot:run --projects game-score-api \
-    -Dspring-boot.run.jvmArguments="-Dspring.data.mongodb.username=gamescoreuser -Dspring.data.mongodb.password=gamescorepass"
+  ./mvnw clean spring-boot:run --projects game-score-api
   ```
 
 ## Running Applications as Docker containers
@@ -96,8 +94,6 @@ The goal of this project is to get a list of games and their scores from a websi
   ```
   docker run --rm --name game-score-collector \
     -e MONGODB_HOST=mongodb \
-    -e SPRING_DATA_MONGODB_USERNAME=gamescoreuser \
-    -e SPRING_DATA_MONGODB_PASSWORD=gamescorepass \
     --network=springboot-jsoup-html-parser_default \
     ivanfranchin/game-score-collector:1.0.0
   ```
@@ -106,8 +102,6 @@ The goal of this project is to get a list of games and their scores from a websi
   ```
   docker run --rm --name game-score-api -p 8080:8080 \
     -e MONGODB_HOST=mongodb \
-    -e SPRING_DATA_MONGODB_USERNAME=gamescoreuser \
-    -e SPRING_DATA_MONGODB_PASSWORD=gamescorepass \
     --network=springboot-jsoup-html-parser_default \
     ivanfranchin/game-score-api:1.0.0
   ```
@@ -131,8 +125,7 @@ The goal of this project is to get a list of games and their scores from a websi
 
   List all game scores
   ```
-  docker exec -it mongodb mongo -ugamescoreuser -pgamescorepass --authenticationDatabase gamescoredb
-  use gamescoredb
+  docker exec -it mongodb mongo gamescoredb
   db.gamescores.find()
   db.gamescores.getIndexes()
   ```
