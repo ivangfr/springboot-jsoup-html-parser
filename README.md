@@ -15,7 +15,7 @@ The goal of this project is to get a list of games and their scores from a websi
   [`Spring Boot`](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/) Java Web application that exposes a REST API from where clients can retrieve the game score data stored in `MongoDB` database.
 
   | Endpoints                | Description                                                  |
-  | ------------------------ | ------------------------------------------------------------ |
+  |--------------------------|--------------------------------------------------------------|
   | `GET /api/games[?title]` | returns all game scores or filtered by title with pagination |
   | `GET /api/games/{id}`    | returns a specific game score filtered by id                 |
 
@@ -77,14 +77,14 @@ The goal of this project is to get a list of games and their scores from a websi
 - **game-score-api**
 
   | Environment Variable | Description                                                       |
-  | -------------------- | ----------------------------------------------------------------- |
+  |----------------------|-------------------------------------------------------------------|
   | `MONGODB_HOST`       | Specify host of the `Mongo` database to use (default `localhost`) |
   | `MONGODB_PORT`       | Specify port of the `Mongo` database to use (default `27017`)     |
 
 - **game-score-collector**
 
   | Environment Variable | Description                                                       |
-  | -------------------- | ----------------------------------------------------------------- |
+  |----------------------|-------------------------------------------------------------------|
   | `MONGODB_HOST`       | Specify host of the `Mongo` database to use (default `localhost`) |
   | `MONGODB_PORT`       | Specify port of the `Mongo` database to use (default `27017`)     |
 
