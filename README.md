@@ -98,7 +98,7 @@ The goal of this project is to get a list of games and their scores from a websi
     ivanfranchin/game-score-collector:1.0.0
   ```
 
-- Then, execute the following command to run `game-score-api` Docker container in detached mode
+- Then, execute the following command to run `game-score-api` Docker container
   ```
   docker run --rm --name game-score-api -p 8080:8080 \
     -e MONGODB_HOST=mongodb \
