@@ -31,15 +31,10 @@ The goal of this project is to get a list of games and their scores from a websi
 
 ## Start Environment
 
-- Open a terminal and, inside `springboot-jsoup-html-parser` root folder, the command below
-  ```
-  docker-compose up -d
-  ```
-
-- Wait for `mongodb` Docker container to be up and running. To check it, run
-  ```
-  docker-compose ps
-  ```
+Open a terminal and, inside `springboot-jsoup-html-parser` root folder, the command below
+```
+docker-compose up -d
+```
 
 ## Running Applications with Maven
 
