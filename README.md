@@ -2,7 +2,7 @@
 
 The goal of this project is to get a list of games and their scores from a website. The application must parse the website HTML content, get the necessary information, save the data in a database and expose them through a REST API.
 
-> **Note:** In [`kubernetes-minikube-environment`](https://github.com/ivangfr/kubernetes-minikube-environment/tree/master/html-parser-job-cronjob) repository, it's shown how to deploy this project in `Kubernetes` (`Minikube`)
+> **Note**: In [`kubernetes-minikube-environment`](https://github.com/ivangfr/kubernetes-minikube-environment/tree/master/html-parser-job-cronjob) repository, it's shown how to deploy this project in `Kubernetes` (`Minikube`)
 
 ## Project Diagram
 
@@ -25,7 +25,7 @@ The goal of this project is to get a list of games and their scores from a websi
 
 ## Prerequisites
 
-- [`Java 11+`](https://www.oracle.com/java/technologies/downloads/#java11)
+- [`Java 17+`](https://www.oracle.com/java/technologies/downloads/#java17)
 - [`Docker`](https://www.docker.com/)
 - [`Docker-Compose`](https://docs.docker.com/compose/install/)
 
