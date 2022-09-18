@@ -30,18 +30,14 @@ public class CollectorRunner implements CommandLineRunner {
 
         int numGameScores;
         switch (mode) {
-            case GET_AND_SAVE:
-                numGameScores = websiteCollector.collectGameScores();
-                break;
-
-            case GET_ALL_AND_SAVE_ALL:
+            case GET_AND_SAVE -> numGameScores = websiteCollector.collectGameScores();
+            case GET_ALL_AND_SAVE_ALL -> {
                 List<GameScore> gameScores = websiteCollector.getGameScores();
                 gameScoreService.saveGameScores(gameScores);
                 numGameScores = gameScores.size();
-                break;
-
-            default:
-                throw new IllegalArgumentException(String.format("The collector mode '%s' is not valid.", mode.name()));
+            }
+            default -> throw new IllegalArgumentException(
+                    String.format("The collector mode '%s' is not valid.", mode.name()));
         }
 
         Duration duration = Duration.between(start, Instant.now());

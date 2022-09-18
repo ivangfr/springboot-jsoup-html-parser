@@ -20,7 +20,7 @@
         <java.version>17</java.version>
         <repackage.classifier/>
         <spring-native.version>0.12.1</spring-native.version>
-        <jib-maven-plugin.version>3.2.1</jib-maven-plugin.version>
+        <jib-maven-plugin.version>3.3.0</jib-maven-plugin.version>
         <docker-image.prefix>ivanfranchin</docker-image.prefix>
     </properties>
 

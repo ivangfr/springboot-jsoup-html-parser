@@ -53,7 +53,7 @@ public class WebsiteCollector {
                 .mapToObj(i ->
                         CompletableFuture.supplyAsync(() ->
                                 websiteClient.call(getPageUrl(i))).thenApply(websiteContentParser::parse))
-                .collect(Collectors.toList());
+                .toList();
 
         return CompletableFuture.allOf(completableFutureList.toArray(new CompletableFuture[0]))
                 .thenApply(v ->

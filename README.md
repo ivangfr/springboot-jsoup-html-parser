@@ -120,7 +120,7 @@ docker-compose up -d
 
   List all game scores
   ```
-  docker exec -it mongodb mongo gamescoredb
+  docker exec -it mongodb mongosh gamescoredb
   db.gamescores.find()
   db.gamescores.getIndexes()
   ```
