@@ -1,9 +1,10 @@
 package com.ivanfranchin.gamescoreapi;
 
 
-import com.ivanfranchin.gamescoreapi.rest.dto.GameScoreResponse;
 import com.ivanfranchin.gamescoreapi.model.GameScore;
 import com.ivanfranchin.gamescoreapi.repository.GameScoreRepository;
+import com.ivanfranchin.gamescoreapi.rest.dto.GameScoreResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,12 +13,10 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.annotation.DirtiesContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class GameScoreApiApplicationTests {
 
     @Autowired
@@ -25,6 +24,11 @@ class GameScoreApiApplicationTests {
 
     @Autowired
     private TestRestTemplate testRestTemplate;
+
+    @BeforeEach
+    void setUp() {
+        gameScoreRepository.deleteAll();
+    }
 
     @Test
     void givenNonExistingGameIdTestGetGameScore() {
