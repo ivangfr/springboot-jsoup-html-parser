@@ -1,11 +1,11 @@
 package com.ivanfranchin.gamescoreapi.rest;
 
-import com.ivanfranchin.gamescoreapi.rest.dto.GameScoreResponse;
 import com.ivanfranchin.gamescoreapi.mapper.GameScoreMapper;
 import com.ivanfranchin.gamescoreapi.model.GameScore;
+import com.ivanfranchin.gamescoreapi.rest.dto.GameScoreResponse;
 import com.ivanfranchin.gamescoreapi.service.GameScoreService;
 import lombok.RequiredArgsConstructor;
-import org.springdoc.api.annotations.ParameterObject;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -14,8 +14,9 @@
     <description>Demo project for Spring Boot</description>
 
     <properties>
-        <spring-cloud.version>2021.0.5</spring-cloud.version>
+        <spring-cloud.version>2022.0.1</spring-cloud.version>
         <jsoup.version>1.15.3</jsoup.version>
+        <de-flapdoodle-embed-mongo.version>4.4.1</de-flapdoodle-embed-mongo.version>
     </properties>
 
     <dependencies>
@@ -23,18 +24,16 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
 
         <!-- JSoup -->
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
             <version>${jsoup.version}</version>
-        </dependency>
-
-        <!-- Add javax.validation -->
-        <dependency>
-            <groupId>org.hibernate.validator</groupId>
-            <artifactId>hibernate-validator</artifactId>
         </dependency>
 
         <dependency>
@@ -55,6 +54,7 @@
         <dependency>
             <groupId>de.flapdoodle.embed</groupId>
             <artifactId>de.flapdoodle.embed.mongo</artifactId>
+            <version>${de-flapdoodle-embed-mongo.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
