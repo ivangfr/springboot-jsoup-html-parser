@@ -6,7 +6,7 @@ The goal of this project is to get a list of games and their scores from a websi
 
 ## Project Diagram
 
-![project-diagram](documentation/project-diagram.png)
+![project-diagram](documentation/project-diagram.jpeg)
 
 ## Applications
 
