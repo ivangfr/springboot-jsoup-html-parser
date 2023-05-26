@@ -141,7 +141,7 @@ Both `game-score-api` and `game-score-collector` have a set of test cases. In or
 - In a terminal, make sure you are inside `springboot-jsoup-html-parser` root folder
 - Execute the following command
   ```
-  ./mvnw clean test --projects game-score-api,game-score-collector
+  ./mvnw clean test --projects game-score-collector,game-score-api
   ```
 
 ## Cleanup

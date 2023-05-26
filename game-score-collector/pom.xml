@@ -14,9 +14,8 @@
     <description>Demo project for Spring Boot</description>
 
     <properties>
-        <spring-cloud.version>2022.0.1</spring-cloud.version>
-        <jsoup.version>1.15.3</jsoup.version>
-        <de-flapdoodle-embed-mongo.version>4.4.1</de-flapdoodle-embed-mongo.version>
+        <spring-cloud.version>2022.0.3</spring-cloud.version>
+        <jsoup.version>1.16.1</jsoup.version>
     </properties>
 
     <dependencies>
@@ -49,12 +48,6 @@
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-contract-stub-runner</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>de.flapdoodle.embed</groupId>
-            <artifactId>de.flapdoodle.embed.mongo</artifactId>
-            <version>${de-flapdoodle-embed-mongo.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
