@@ -8,5 +8,5 @@ public interface MyContainers {
 
     @Container
     @ServiceConnection
-    MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:6.0.6");
+    MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:7.0.0");
 }
